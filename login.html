@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - أولاد شعلان</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Tahoma', sans-serif;
+      background: linear-gradient(135deg, #1a2a6c, #2d4373);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo h1 {
+      color: #1a2a6c;
+      font-size: 28px;
+    }
+    .logo p {
+      color: #666;
+      font-size: 14px;
+    }
+    .logo i {
+      font-size: 50px;
+      color: #1a2a6c;
+      margin-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    .form-group input:focus {
+      border-color: #1a2a6c;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(26,42,108,0.1);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1a2a6c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .login-btn:hover {
+      background: #2d4373;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(26,42,108,0.3);
+    }
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .error-msg {
+      color: #e74c3c;
+      background: #fde8e8;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: none;
+      text-align: center;
+    }
+    .error-msg.show { display: block; }
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .loading-spinner.show { display: block; }
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 4px solid #e0e0e0;
+      border-top-color: #1a2a6c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .footer-text {
+      text-align: center;
+      margin-top: 20px;
+      color: #888;
+      font-size: 13px;
+    }
+    .brand-name {
+      color: #1a2a6c;
+      font-weight: bold;
+    }
+    @media (max-width: 480px) {
+      .login-container { padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="logo">
+      <i class="fas fa-store-alt"></i>
+      <h1>أولاد شعلان</h1>
+      <p>لوحة تحكم المسؤولين</p>
+    </div>
+
+    <div id="errorMsg" class="error-msg">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorText">خطأ في تسجيل الدخول</span>
+    </div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> الإيميل</label>
+        <input type="email" id="emailInput" placeholder="admin@example.com" required>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> كلمة المرور</label>
+        <input type="password" id="passwordInput" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+      </button>
+    </form>
+
+    <div class="loading-spinner" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: #666;">جاري التحقق...</p>
+    </div>
+
+    <div class="footer-text">
+      <i class="fas fa-shield-alt"></i> نظام آمن بإدارة <span class="brand-name">FAMO</span>
+    </div>
+  </div>
+
+  <!-- ===== Firebase Scripts ===== -->
+<script src="famo-sec.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+    import { getDatabase, ref, get } from 'firebase/database';
+
+    // ===== تهيئة Firebase =====
+    const app = initializeApp(window.firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // ===== التحقق من حالة تسجيل الدخول عند تحميل الصفحة =====
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // تحقق من أن المستخدم مسؤول
+        try {
+          const adminRef = ref(database, `admins/${user.uid}`);
+          const snapshot = await get(adminRef);
+          if (snapshot.exists()) {
+            // ✅ مسؤول - التوجيه إلى لوحة التحكم
+            window.location.href = 'admin.html';
+          } else {
+            // ❌ ليس مسؤولاً - تسجيل الخروج
+            await signOut(auth);
+            showError('⚠️ هذا الحساب ليس مسؤولاً');
+          }
+        } catch (e) {
+          console.error('Error checking admin:', e);
+          await signOut(auth);
+        }
+      }
+    });
+
+    // ===== دالة تسجيل الدخول =====
+    window.handleLogin = async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const btn = document.getElementById('loginBtn');
+      const spinner = document.getElementById('loadingSpinner');
+      const errorMsg = document.getElementById('errorMsg');
+      const errorText = document.getElementById('errorText');
+
+      // إخفاء الرسائل السابقة
+      errorMsg.classList.remove('show');
+      
+      // تعطيل الزر وإظهار التحميل
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...';
+      spinner.classList.add('show');
+
+      try {
+        // 1. تسجيل الدخول عبر Firebase Auth
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // 2. التحقق من وجود المستخدم في عقدة admins
+        const adminRef = ref(database, `admins/${user.uid}`);
+        const snapshot = await get(adminRef);
+        
+        if (!snapshot.exists()) {
+          // تسجيل الخروج إذا لم يكن مسؤولاً
+          await signOut(auth);
+          showError('⚠️ غير مصرح بالدخول. هذا الحساب ليس مسؤولاً.');
+          return;
+        }
+
+        // 3. التحقق من أن الإيميل متطابق
+        const adminData = snapshot.val();
+        if (adminData.email !== email) {
+          await signOut(auth);
+          showError('⚠️ الإيميل غير متطابق مع بيانات المسؤول.');
+          return;
+        }
+
+        // 4. ✅ نجاح تسجيل الدخول - التوجيه إلى لوحة التحكم
+        window.location.href = 'admin.html';
+
+      } catch (error) {
+        console.error('Login error:', error);
+        let msg = 'حدث خطأ أثناء تسجيل الدخول';
+        if (error.code === 'auth/user-not-found') {
+          msg = '⚠️ هذا الإيميل غير مسجل';
+        } else if (error.code === 'auth/wrong-password') {
+          msg = '⚠️ كلمة المرور غير صحيحة';
+        } else if (error.code === 'auth/invalid-email') {
+          msg = '⚠️ صيغة الإيميل غير صحيحة';
+        } else if (error.code === 'auth/too-many-requests') {
+          msg = '⚠️ تم تجاوز عدد المحاولات. حاول لاحقاً';
+        }
+        showError(msg);
+      } finally {
+        // إعادة تفعيل الزر
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+        spinner.classList.remove('show');
+      }
+    };
+
+    function showError(msg) {
+      const errorMsg = document.getElementById('errorMsg');
+      const errorText = document.getElementById('errorText');
+      errorText.textContent = msg;
+      errorMsg.classList.add('show');
+    }
+
+  </script>
+</body>
+</html>

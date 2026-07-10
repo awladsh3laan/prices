@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عرض الأسعار - أولاد شعلان</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .search-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 800px;
+      margin: 30px auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .search-box {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 18px;
+      min-width: 200px;
+    }
+    .search-box input:focus {
+      border-color: #1a2a6c;
+      outline: none;
+    }
+    .search-box button {
+      padding: 15px 35px;
+      background: #1a2a6c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+    .search-box button:hover {
+      background: #2d4373;
+      transform: translateY(-2px);
+    }
+
+    .result-container {
+      margin-top: 30px;
+      display: none;
+    }
+    .result-container.show { display: block; }
+
+    .product-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .product-image {
+      flex: 0 0 200px;
+      max-width: 200px;
+    }
+    .product-image img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #eee;
+    }
+    .product-info {
+      flex: 1;
+      min-width: 250px;
+    }
+    .product-info h2 {
+      color: #1a2a6c;
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+    .price-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .price-options button {
+      padding: 10px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+    .price-options button:hover,
+    .price-options button.active {
+      border-color: #1a2a6c;
+      background: #1a2a6c;
+      color: white;
+    }
+    .price-display {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+    .price-display .price {
+      font-size: 28px;
+      color: #1a2a6c;
+      font-weight: bold;
+    }
+    .price-display .label {
+      font-size: 16px;
+      color: #666;
+    }
+    .price-display .sub-info {
+      font-size: 14px;
+      color: #888;
+      margin-top: 5px;
+    }
+    .wholesale-price {
+      margin-top: 10px;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 8px;
+      color: #856404;
+      font-size: 14px;
+    }
+    .not-found {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+    .not-found i {
+      font-size: 60px;
+      color: #ddd;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .product-image { flex: 0 0 100%; max-width: 100%; }
+      .product-image img { height: 150px; }
+      .price-display .price { font-size: 22px; }
+      .search-box button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="brand">
+        <i class="fas fa-store-alt"></i>
+        <span>أولاد شعلان</span>
+      </div>
+      <button class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="index.html" class="active"><i class="fas fa-tags"></i> عرض الأسعار</a></li>
+        <li id="dynamicLinks"></li>
+        <li><a href="login.html"><i class="fas fa-user-lock"></i> دخول</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== Search Section ===== -->
+  <div class="container">
+    <div class="search-section">
+      <h2 style="text-align:center; color:#1a2a6c;">
+        <i class="fas fa-search"></i> ابحث عن سعر المنتج
+      </h2>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="اكتب اسم المنتج..." onkeyup="if(event.key==='Enter') searchProduct()">
+        <button onclick="searchProduct()"><i class="fas fa-search"></i> بحث</button>
+      </div>
+      <div id="resultContainer" class="result-container">
+        <div id="resultContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="copyright">
+        <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026
+      </div>
+      <div class="credit">
+        تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Scripts ===== -->
+<script src="famo-sec.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getDatabase, ref, get, onValue } from 'firebase/database';
+
+    const app = initializeApp(window.firebaseConfig);
+    const database = getDatabase(app);
+
+    // ===== متغيرات =====
+    let allProducts = [];
+    let currentProduct = null;
+    let selectedUnit = 'piece';
+
+    // ===== تحميل المنتجات =====
+    async function loadProducts() {
+      try {
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          allProducts = Object.values(data);
+        } else {
+          // استخدام البيانات الافتراضية
+          allProducts = window.DEFAULT_PRODUCTS || [];
+        }
+      } catch (e) {
+        console.error('Error loading products:', e);
+        allProducts = window.DEFAULT_PRODUCTS || [];
+      }
+    }
+
+    // ===== البحث عن منتج =====
+    window.searchProduct = function() {
+      const query = document.getElementById('searchInput').value.trim();
+      const container = document.getElementById('resultContainer');
+      const content = document.getElementById('resultContent');
+
+      if (!query) {
+        container.classList.remove('show');
+        return;
+      }
+
+      // بحث غير حساس لحالة الأحرف
+      const found = allProducts.find(p => 
+        p.name && p.name.includes(query)
+      );
+
+      if (found) {
+        currentProduct = found;
+        selectedUnit = 'piece';
+        displayProduct(found);
+        container.classList.add('show');
+      } else {
+        content.innerHTML = `
+          <div class="not-found">
+            <i class="fas fa-box-open"></i>
+            <h3>المنتج غير موجود</h3>
+            <p>لم نجد منتجاً باسم "${query}"</p>
+          </div>
+        `;
+        container.classList.add('show');
+      }
+    };
+
+    // ===== عرض المنتج =====
+    function displayProduct(product) {
+      const container = document.getElementById('resultContent');
+      
+      // حساب الأسعار حسب الوحدة المختارة
+      let price = product.retail || 'غير محدد';
+      let unitLabel = 'القطعة';
+      let subInfo = '';
+
+      if (selectedUnit === 'piece') {
+        price = product.retail || product.pricePerPiece || 'غير محدد';
+        unitLabel = 'سعر القطعة';
+      } else if (selectedUnit === 'shrink') {
+        price = product.pricePerShrink || (product.retail ? parseFloat(product.retail) * (product.shrinkCount || 1) : 'غير محدد');
+        unitLabel = `سعر الشرنك (${product.shrinkCount || '?'} قطع)`;
+        subInfo = `عدد القطع في الشرنك: ${product.shrinkCount || 'غير محدد'}`;
+      } else if (selectedUnit === 'carton') {
+        price = product.pricePerCarton || (product.retail ? parseFloat(product.retail) * (product.cartonCount || 1) : 'غير محدد');
+        unitLabel = `سعر الكرتونة (${product.cartonCount || '?'} قطعة)`;
+        subInfo = `عدد القطع في الكرتونة: ${product.cartonCount || 'غير محدد'}`;
+      } else if (selectedUnit === 'bale') {
+        price = product.pricePerBale || (product.retail ? parseFloat(product.retail) * (product.baleCount || 1) : 'غير محدد');
+        unitLabel = `سعر البالة (${product.baleCount || '?'} قطعة)`;
+        subInfo = `عدد القطع في البالة: ${product.baleCount || 'غير محدد'}`;
+      }
+
+      // تنسيق السعر
+      const priceDisplay = typeof price === 'number' ? `${price} جنيه` : price;
+
+      container.innerHTML = `
+        <div class="product-card">
+          <div class="product-image">
+            <img src="${product.imageUrl || 'https://via.placeholder.com/200x200?text=No+Image'}" 
+                 alt="${product.name}" 
+                 onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
+          </div>
+          <div class="product-info">
+            <h2>${product.name}</h2>
+            
+            <div class="price-options">
+              <button class="${selectedUnit === 'piece' ? 'active' : ''}" onclick="selectUnit('piece')">
+                <i class="fas fa-cube"></i> قطعة
+              </button>
+              <button class="${selectedUnit === 'shrink' ? 'active' : ''}" onclick="selectUnit('shrink')">
+                <i class="fas fa-layer-group"></i> شرنك
+              </button>
+              <button class="${selectedUnit === 'carton' ? 'active' : ''}" onclick="selectUnit('carton')">
+                <i class="fas fa-box"></i> كرتونة
+              </button>
+              <button class="${selectedUnit === 'bale' ? 'active' : ''}" onclick="selectUnit('bale')">
+                <i class="fas fa-pallet"></i> بالة
+              </button>
+            </div>
+
+            <div class="price-display">
+              <div class="label">${unitLabel}</div>
+              <div class="price">${priceDisplay}</div>
+              ${subInfo ? `<div class="sub-info">${subInfo}</div>` : ''}
+            </div>
+
+            ${product.wholesale ? `
+              <div class="wholesale-price">
+                <i class="fas fa-tag"></i> سعر الشراء (الجملة): ${product.wholesale} جنيه
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // ===== اختيار الوحدة =====
+    window.selectUnit = function(unit) {
+      selectedUnit = unit;
+      if (currentProduct) {
+        displayProduct(currentProduct);
+      }
+    };
+
+    // ===== Toggle Menu =====
+    window.toggleMenu = function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    };
+
+    // ===== تحميل روابط المنيو =====
+    async function loadMenuLinks() {
+      try {
+        const menuRef = ref(database, 'menu/links');
+        const snapshot = await get(menuRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          const container = document.getElementById('dynamicLinks');
+          container.innerHTML = links.map(link => `
+            <li><a href="${link.url || '#'}"><i class="fas fa-link"></i> ${link.name || 'رابط'}</a></li>
+          `).join('');
+        }
+      } catch (e) {
+        console.log('Menu load error:', e);
+      }
+    }
+
+    // ===== الاستماع لتغييرات المنتجات (تحديث فوري) =====
+    function listenForProductChanges() {
+      const productsRef = ref(database, 'products');
+      onValue(productsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          allProducts = Object.values(data);
+          // إذا كان هناك منتج معروض، أعد البحث عنه
+          if (document.getElementById('resultContainer').classList.contains('show')) {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+              const found = allProducts.find(p => p.name && p.name.includes(query));
+              if (found) {
+                currentProduct = found;
+                displayProduct(found);
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ===== التهيئة =====
+    await loadProducts();
+    await loadMenuLinks();
+    listenForProductChanges();
+
+    // البحث التلقائي إذا كان هناك query في الـ URL
+    const params = new URLSearchParams(window.location.search);
+    const searchQuery = params.get('search');
+    if (searchQuery) {
+      document.getElementById('searchInput').value = searchQuery;
+      searchProduct();
+    }
+
+  </script>
+</body>
+</html>

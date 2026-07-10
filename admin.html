@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - أولاد شعلان</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+	    <!-- ضافة العقد الافتراضية -->
+		<!-- في لوحة التحكم، أضف هذا الزر -->
+<div class="admin-section">
+  <h2><i class="fas fa-database"></i> تهيئة قاعدة البيانات</h2>
+  <p style="color:#888; font-size:14px; margin-bottom:15px;">
+    هذا الزر سيضيف جميع البيانات الافتراضية: المنتجات (221 منتج)، المسؤولين، السلايدر، المنيو، الكروت، والهيدر.
+  </p>
+  <button class="btn btn-warning" onclick="initializeDatabase()" style="font-size:18px; padding:15px 30px;">
+    <i class="fas fa-database"></i> 🚀 تهيئة قاعدة البيانات (إضافة كل البيانات)
+  </button>
+</div>
+  <style>
+    .admin-dashboard {
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .admin-header {
+      background: white;
+      border-radius: 15px;
+      padding: 20px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .admin-header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .admin-header .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #1a2a6c;
+    }
+    .admin-header .user-info h3 {
+      color: #1a2a6c;
+      margin: 0;
+    }
+    .admin-header .user-info p {
+      color: #888;
+      font-size: 13px;
+      margin: 0;
+    }
+    .logout-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+    .logout-btn:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .stat-card .number {
+      font-size: 30px;
+      font-weight: bold;
+      color: #1a2a6c;
+    }
+    .stat-card .label {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .btn-group .btn {
+      flex: 1;
+      min-width: 150px;
+      justify-content: center;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-content .close {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #888;
+    }
+    .modal-content .close:hover { color: #333; }
+    .modal-content h2 {
+      color: #1a2a6c;
+      margin-bottom: 20px;
+    }
+    .modal-content .form-group {
+      margin-bottom: 15px;
+    }
+    .modal-content .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .modal-content .form-group input,
+    .modal-content .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .sync-report {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .sync-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sync-item.success { background: #d4edda; color: #155724; }
+    .sync-item.warning { background: #fff3cd; color: #856404; }
+    .sync-item.error { background: #f8d7da; color: #721c24; }
+
+    .table-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .table-actions .btn-sm {
+      padding: 5px 12px;
+      font-size: 13px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-sm.edit { background: #3498db; color: white; }
+    .btn-sm.delete { background: #e74c3c; color: white; }
+    .btn-sm:hover { opacity: 0.8; }
+
+    @media (max-width: 768px) {
+      .admin-header { flex-direction: column; align-items: stretch; text-align: center; }
+      .admin-header .user-info { justify-content: center; }
+      .btn-group .btn { flex: 1 1 100%; }
+      .modal-content { margin: 10px; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="brand">
+        <i class="fas fa-store-alt"></i>
+        <span>أولاد شعلان</span>
+      </div>
+      <button class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="index.html"><i class="fas fa-tags"></i> عرض الأسعار</a></li>
+        <li id="dynamicLinks"></li>
+        <li><a href="login.html"><i class="fas fa-user-lock"></i> دخول</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== Dashboard ===== -->
+  <div class="admin-dashboard" id="dashboard" style="display:none;">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="user-info">
+        <img id="adminAvatar" src="https://i.ibb.co/HLKqRgtK/Picsart-26-06-02-06-55-02-557.png" alt="Admin">
+        <div>
+          <h3 id="adminName">mostafa</h3>
+          <p id="adminEmail">famo@admin.net</p>
+          <p id="adminRole" style="color:#1a2a6c;font-weight:bold;">سوبر أدمن</p>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-info" onclick="editProfile()" style="margin-left:10px;">
+          <i class="fas fa-user-edit"></i> تعديل الملف
+        </button>
+        <button class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+      </div>
+    </div>
+	
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="number" id="productCount">0</div>
+        <div class="label">إجمالي المنتجات</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="sliderCount">0</div>
+        <div class="label">صور السلايدر</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="adminCount">0</div>
+        <div class="label">المسؤولين</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="menuCount">0</div>
+        <div class="label">روابط المنيو</div>
+      </div>
+    </div>
+
+    <!-- ===== أزرار المزامنة والتصدير ===== -->
+    <div class="admin-section">
+      <h2><i class="fas fa-sync-alt"></i> المزامنة والتصدير</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="syncAllData()">
+          <i class="fas fa-sync-alt"></i> مزامنة جميع البيانات
+        </button>
+        <button class="btn btn-success" onclick="exportJSON()">
+          <i class="fas fa-file-export"></i> تصدير JSON
+        </button>
+        <button class="btn btn-info" onclick="exportHTML()">
+          <i class="fas fa-file-code"></i> تصدير HTML
+        </button>
+        <button class="btn btn-warning" onclick="updateOfflinePage()">
+          <i class="fas fa-download"></i> تحديث المنتجات الاحتياطية
+        </button>
+      </div>
+      <div id="syncReport" class="sync-report" style="display:none;"></div>
+    </div>
+
+    <!-- ===== إدارة المنتجات ===== -->
+    <div class="admin-section">
+      <h2><i class="fas fa-boxes"></i> إدارة المنتجات</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openAddProduct()">
+          <i class="fas fa-plus"></i> إضافة منتج
+        </button>
+        <button class="btn btn-success" onclick="importProducts()">
+          <i class="fas fa-file-import"></i> استيراد المنتجات الافتراضية
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الصورة</th>
+              <th>اسم المنتج</th>
+              <th>الجملة</th>
+              <th>التجزئة</th>
+              <th>الكمية</th>
+              <th>العمليات</th>
+            </tr>
+          </thead>
+          <tbody id="productsTableBody">
+            <tr><td colspan="7" style="text-align:center;color:#888;">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== إدارة السلايدر ===== -->
+    <div class="admin-section">
+      <h2><i class="fas fa-images"></i> إدارة السلايدر</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openAddSlider()">
+          <i class="fas fa-plus"></i> إضافة صورة
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr><th>#</th><th>الصورة</th><th>الترتيب</th><th>العمليات</th></tr>
+          </thead>
+          <tbody id="sliderTableBody">
+            <tr><td colspan="4" style="text-align:center;color:#888;">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== إدارة المنيو ===== -->
+    <div class="admin-section">
+      <h2><i class="fas fa-bars"></i> إدارة المنيو</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openAddMenu()">
+          <i class="fas fa-plus"></i> إضافة رابط
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr><th>#</th><th>الاسم</th><th>الرابط</th><th>الترتيب</th><th>العمليات</th></tr>
+          </thead>
+          <tbody id="menuTableBody">
+            <tr><td colspan="5" style="text-align:center;color:#888;">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== إدارة كروت الرئيسية ===== -->
+    <div class="admin-section">
+      <h2><i class="fas fa-th-large"></i> إدارة كروت الرئيسية</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openAddCard()">
+          <i class="fas fa-plus"></i> إضافة كارت
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr><th>#</th><th>الأيقونة</th><th>العنوان</th><th>الوصف</th><th>الرابط</th><th>العمليات</th></tr>
+          </thead>
+          <tbody id="cardsTableBody">
+            <tr><td colspan="6" style="text-align:center;color:#888;">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== إدارة المسؤولين (فقط للسوبر أدمن) ===== -->
+    <div class="admin-section" id="adminManagement" style="display:none;">
+      <h2><i class="fas fa-users-gear"></i> إدارة المسؤولين</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openAddAdmin()">
+          <i class="fas fa-user-plus"></i> إضافة مسؤول
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr><th>#</th><th>الصورة</th><th>الاسم</th><th>الإيميل</th><th>الدور</th><th>العمليات</th></tr>
+          </thead>
+          <tbody id="adminsTableBody">
+            <tr><td colspan="6" style="text-align:center;color:#888;">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal ===== -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">العنوان</h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="copyright">
+        <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026
+      </div>
+      <div class="credit">
+        تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Scripts ===== -->
+<script src="famo-sec.js"></script>  
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+    import { getDatabase, ref, get, set, update, remove, push, onValue, query, orderByChild } from 'firebase/database';
+
+    // ===== تهيئة Firebase =====
+    const app = initializeApp(window.firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // ===== متغيرات عامة =====
+    let currentAdmin = null;
+    let currentAdminData = null;
+    let isSuperAdmin = false;
+	// ===== التحقق من تسجيل الدخول =====
+onAuthStateChanged(auth, async (user) => {
+  console.log('Auth state changed:', user);
+  
+  if (!user) {
+    console.log('❌ No user, redirecting to login');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  console.log('✅ User found:', user.uid, user.email);
+
+  // جلب بيانات المسؤول
+  try {
+    const adminRef = ref(database, `admins/${user.uid}`);
+    const snapshot = await get(adminRef);
+    
+    console.log('Admin data exists:', snapshot.exists());
+    
+    if (!snapshot.exists()) {
+      console.log('❌ Not an admin, signing out');
+      await signOut(auth);
+      window.location.href = 'login.html';
+      return;
+    }
+
+    currentAdmin = user;
+    currentAdminData = snapshot.val();
+    isSuperAdmin = currentAdminData.role === 'super_admin';
+
+    console.log('✅ Admin logged in:', currentAdminData.name);
+
+    // عرض لوحة التحكم
+    document.getElementById('dashboard').style.display = 'block';
+    
+    // تحديث معلومات المسؤول
+    document.getElementById('adminName').textContent = currentAdminData.name || 'مسؤول';
+    document.getElementById('adminEmail').textContent = currentAdminData.email || '';
+    document.getElementById('adminRole').textContent = isSuperAdmin ? 'سوبر أدمن' : 'أدمن';
+    if (currentAdminData.imageUrl) {
+      document.getElementById('adminAvatar').src = currentAdminData.imageUrl;
+    }
+
+    // إظهار قسم إدارة المسؤولين فقط للسوبر أدمن
+    if (isSuperAdmin) {
+      document.getElementById('adminManagement').style.display = 'block';
+    }
+
+    // =============================================
+    // 🚀 تحميل البيانات + التهيئة التلقائية
+    // =============================================
+    
+    // 1. تحميل البيانات أولاً
+    await loadAllData();
+    
+    // 2. التهيئة التلقائية (لو البيانات مش موجودة)
+    await checkAndInitializeData();
+    
+    // 3. تحميل روابط المنيو
+    await loadMenuLinks();
+
+  } catch (e) {
+    console.error('❌ Error checking admin:', e);
+    await signOut(auth);
+    window.location.href = 'login.html';
+  }
+});
+// =============================================
+// 📦 دالة التهيئة التلقائية
+// =============================================
+async function checkAndInitializeData() {
+  try {
+    console.log('🔍 جاري فحص البيانات...');
+    let dataAdded = false;
+    
+    // 1. التحقق من وجود المنتجات
+    const productsRef = ref(database, 'products');
+    const productsSnap = await get(productsRef);
+    
+    if (!productsSnap.exists()) {
+      console.log('📦 لا توجد منتجات، جاري التهيئة...');
+      const products = window.DEFAULT_PRODUCTS || [];
+      let count = 0;
+      
+      for (const p of products) {
+        const key = `product_${p.id}`;
+        await set(ref(database, `products/${key}`), {
+          name: p.name,
+          wholesale: p.wholesale,
+          retail: p.retail,
+          qty: p.qty,
+          pricePerPiece: parseFloat(p.retail) || 0,
+          pricePerShrink: null,
+          pricePerCarton: null,
+          pricePerBale: null,
+          shrinkCount: null,
+          cartonCount: null,
+          baleCount: null,
+          buyPrice: p.wholesale,
+          imageUrl: "",
+          id: p.id
+        });
+        count++;
+      }
+      console.log(`✅ تم إضافة ${count} منتج`);
+      dataAdded = true;
+    } else {
+      console.log('✅ المنتجات موجودة بالفعل');
+    }
+    
+    // 2. التحقق من وجود السلايدر
+    const sliderRef = ref(database, 'slider/images');
+    const sliderSnap = await get(sliderRef);
+    if (!sliderSnap.exists()) {
+      await set(sliderRef, {
+        img1: { id: 'img1', url: 'https://i.ibb.co/LhJVbMVM/19020.png', order: 1 },
+        img2: { id: 'img2', url: 'https://i.ibb.co/mVtrf67C/19023.png', order: 2 }
+      });
+      console.log('✅ تم إضافة السلايدر');
+      dataAdded = true;
+    }
+    
+    // 3. التحقق من وجود المنيو
+    const menuRef = ref(database, 'menu/links');
+    const menuSnap = await get(menuRef);
+    if (!menuSnap.exists()) {
+      await set(menuRef, {
+        link1: { id: 'link1', name: 'الرئيسية', url: 'home.html', order: 1 },
+        link2: { id: 'link2', name: 'عرض الأسعار', url: 'index.html', order: 2 }
+      });
+      console.log('✅ تم إضافة المنيو');
+      dataAdded = true;
+    }
+    
+    // 4. التحقق من وجود الكروت
+    const cardsRef = ref(database, 'homeCards/cards');
+    const cardsSnap = await get(cardsRef);
+    if (!cardsSnap.exists()) {
+      await set(cardsRef, {
+        card1: { id: 'card1', icon: 'fa-store', title: 'عرض الأسعار', description: 'ابحث عن سعر أي منتج', link: 'index.html', order: 1 },
+        card2: { id: 'card2', icon: 'fa-image', title: 'معرض المنتجات', description: 'شاهد جميع المنتجات', link: '#', order: 2 }
+      });
+      console.log('✅ تم إضافة الكروت');
+      dataAdded = true;
+    }
+    
+    // 5. التحقق من وجود الهيدر
+    const headerRef = ref(database, 'header/imageUrl');
+    const headerSnap = await get(headerRef);
+    if (!headerSnap.exists()) {
+      await set(headerRef, 'https://i.ibb.co/LhJVbMVM/19020.png');
+      console.log('✅ تم إضافة الهيدر');
+      dataAdded = true;
+    }
+    
+    // 6. التحقق من وجود admins (إضافة السوبر أدمن لو مش موجود)
+    const adminsRef = ref(database, `admins/${currentAdmin.uid}`);
+    const adminsSnap = await get(adminsRef);
+    if (!adminsSnap.exists()) {
+      await set(adminsRef, {
+        email: currentAdmin.email,
+        name: currentAdmin.displayName || 'mostafa',
+        role: 'super_admin',
+        imageUrl: 'https://i.ibb.co/HLKqRgtK/Picsart-26-06-02-06-55-02-557.png',
+        uid: currentAdmin.uid,
+        addedAt: new Date().toISOString()
+      });
+      console.log('✅ تم إضافة السوبر أدمن');
+      dataAdded = true;
+    }
+    
+    if (dataAdded) {
+      console.log('✅ تمت إضافة بيانات جديدة، سيتم إعادة تحميل الصفحة...');
+      // إعادة تحميل الصفحة بعد ثانية عشان تظهر البيانات
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+    } else {
+      console.log('✅ جميع البيانات موجودة مسبقاً');
+    }
+    
+  } catch (e) {
+    console.error('❌ خطأ في التهيئة:', e);
+  }
+}
+
+    // ===== دوال الخروج =====
+    window.logout = async function() {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    };
+
+    // ===== تحميل جميع البيانات =====
+	async function loadAllData() {
+  try {
+    await loadProducts();
+    await loadSlider();
+    await loadMenu();
+    await loadCards();
+    if (isSuperAdmin) {
+      await loadAdmins();
+    }
+    updateStats();
+  } catch (e) {
+    console.error('Error loading data:', e);
+    // عرض رسالة خطأ للمستخدم
+    document.querySelector('.admin-dashboard').innerHTML += `
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> 
+        خطأ في تحميل البيانات: ${e.message}
+      </div>
+    `;
+  }
+}
+    // ===== تحميل المنتجات =====
+    async function loadProducts() {
+      const tbody = document.getElementById('productsTableBody');
+      try {
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const products = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+          tbody.innerHTML = products.map((p, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td><img src="${p.imageUrl || 'https://via.placeholder.com/50'}" class="product-thumb" onerror="this.src='https://via.placeholder.com/50'"></td>
+              <td>${p.name || ''}</td>
+              <td>${p.wholesale || ''}</td>
+              <td>${p.retail || ''}</td>
+              <td>${p.qty || ''}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-sm edit" onclick="openEditProduct('${p.key}')"><i class="fas fa-pen"></i></button>
+                  <button class="btn-sm delete" onclick="deleteProduct('${p.key}')"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;">لا توجد منتجات</td></tr>';
+        }
+      } catch (e) {
+        console.error('Error loading products:', e);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;">خطأ في التحميل</td></tr>';
+      }
+    }
+
+    // ===== تحميل السلايدر =====
+    async function loadSlider() {
+      const tbody = document.getElementById('sliderTableBody');
+      try {
+        const sliderRef = ref(database, 'slider/images');
+        const snapshot = await get(sliderRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const images = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+          tbody.innerHTML = images.map((img, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td><img src="${img.url || ''}" class="product-thumb" onerror="this.src='https://via.placeholder.com/50'"></td>
+              <td>${img.order || 0}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-sm delete" onclick="deleteSliderImage('${img.key}')"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">لا توجد صور</td></tr>';
+        }
+      } catch (e) {
+        console.error('Error loading slider:', e);
+      }
+    }
+
+    // ===== تحميل المنيو =====
+    async function loadMenu() {
+      const tbody = document.getElementById('menuTableBody');
+      try {
+        const menuRef = ref(database, 'menu/links');
+        const snapshot = await get(menuRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const links = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+          tbody.innerHTML = links.map((link, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${link.name || ''}</td>
+              <td>${link.url || ''}</td>
+              <td>${link.order || 0}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-sm edit" onclick="openEditMenu('${link.key}')"><i class="fas fa-pen"></i></button>
+                  <button class="btn-sm delete" onclick="deleteMenuLink('${link.key}')"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;">لا توجد روابط</td></tr>';
+        }
+      } catch (e) {
+        console.error('Error loading menu:', e);
+      }
+    }
+
+    // ===== تحميل الكروت =====
+    async function loadCards() {
+      const tbody = document.getElementById('cardsTableBody');
+      try {
+        const cardsRef = ref(database, 'homeCards/cards');
+        const snapshot = await get(cardsRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const cards = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+          tbody.innerHTML = cards.map((card, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td><i class="fas ${card.icon || 'fa-circle'}"></i></td>
+              <td>${card.title || ''}</td>
+              <td>${card.description || ''}</td>
+              <td>${card.link || ''}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-sm edit" onclick="openEditCard('${card.key}')"><i class="fas fa-pen"></i></button>
+                  <button class="btn-sm delete" onclick="deleteCard('${card.key}')"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">لا توجد كروت</td></tr>';
+        }
+      } catch (e) {
+        console.error('Error loading cards:', e);
+      }
+    }
+
+    // ===== تحميل المسؤولين =====
+    async function loadAdmins() {
+      const tbody = document.getElementById('adminsTableBody');
+      try {
+        const adminsRef = ref(database, 'admins');
+        const snapshot = await get(adminsRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const admins = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+          tbody.innerHTML = admins.map((admin, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td><img src="${admin.imageUrl || 'https://via.placeholder.com/50'}" class="product-thumb" onerror="this.src='https://via.placeholder.com/50'"></td>
+              <td>${admin.name || ''}</td>
+              <td>${admin.email || ''}</td>
+              <td>${admin.role === 'super_admin' ? 'سوبر أدمن' : 'أدمن'}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-sm edit" onclick="openEditAdmin('${admin.key}')"><i class="fas fa-pen"></i></button>
+                  ${admin.key !== currentAdmin.uid ? `<button class="btn-sm delete" onclick="deleteAdmin('${admin.key}')"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">لا يوجد مسؤولين</td></tr>';
+        }
+      } catch (e) {
+        console.error('Error loading admins:', e);
+      }
+    }
+
+    // ===== تحديث الإحصائيات =====
+    async function updateStats() {
+      try {
+        const productsRef = ref(database, 'products');
+        const productsSnap = await get(productsRef);
+        document.getElementById('productCount').textContent = productsSnap.exists() ? Object.keys(productsSnap.val()).length : 0;
+
+        const sliderRef = ref(database, 'slider/images');
+        const sliderSnap = await get(sliderRef);
+        document.getElementById('sliderCount').textContent = sliderSnap.exists() ? Object.keys(sliderSnap.val()).length : 0;
+
+        const adminsRef = ref(database, 'admins');
+        const adminsSnap = await get(adminsRef);
+        document.getElementById('adminCount').textContent = adminsSnap.exists() ? Object.keys(adminsSnap.val()).length : 0;
+
+        const menuRef = ref(database, 'menu/links');
+        const menuSnap = await get(menuRef);
+        document.getElementById('menuCount').textContent = menuSnap.exists() ? Object.keys(menuSnap.val()).length : 0;
+      } catch (e) {
+        console.error('Error updating stats:', e);
+      }
+    }
+
+    // ===== تحميل روابط المنيو =====
+    async function loadMenuLinks() {
+      try {
+        const menuRef = ref(database, 'menu/links');
+        const snapshot = await get(menuRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          const container = document.getElementById('dynamicLinks');
+          container.innerHTML = links.map(link => `
+            <li><a href="${link.url || '#'}"><i class="fas fa-link"></i> ${link.name || 'رابط'}</a></li>
+          `).join('');
+        }
+      } catch (e) {
+        console.log('Menu load error:', e);
+      }
+    }
+
+    // ===== المودال =====
+    window.openModal = function(title, content) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').innerHTML = content;
+      document.getElementById('modal').classList.add('show');
+    };
+
+    window.closeModal = function() {
+      document.getElementById('modal').classList.remove('show');
+    };
+
+    // إغلاق المودال عند الضغط خارجها
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ===== دوال إضافة وتعديل وحذف المنتجات =====
+    window.openAddProduct = function() {
+      openModal('إضافة منتج جديد', `
+        <form id="productForm" onsubmit="saveProduct(event)">
+          <div class="form-group">
+            <label>اسم المنتج</label>
+            <input type="text" id="p_name" required>
+          </div>
+          <div class="form-group">
+            <label>سعر الجملة</label>
+            <input type="number" id="p_wholesale" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>سعر التجزئة</label>
+            <input type="text" id="p_retail">
+          </div>
+          <div class="form-group">
+            <label>الكمية</label>
+            <input type="number" id="p_qty">
+          </div>
+          <div class="form-group">
+            <label>رابط الصورة (اختياري)</label>
+            <input type="url" id="p_image" placeholder="https://i.ibb.co/...">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> حفظ</button>
+        </form>
+      `);
+    };
+
+    window.saveProduct = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('p_name').value.trim();
+      const wholesale = parseFloat(document.getElementById('p_wholesale').value) || 0;
+      const retail = document.getElementById('p_retail').value.trim();
+      const qty = parseInt(document.getElementById('p_qty').value) || 0;
+      const imageUrl = document.getElementById('p_image').value.trim();
+
+      if (!name) {
+        alert('الرجاء إدخال اسم المنتج');
+        return;
+      }
+
+      const newProduct = {
+        name,
+        wholesale,
+        retail,
+        qty,
+        imageUrl: imageUrl || '',
+        pricePerPiece: parseFloat(retail) || 0,
+        pricePerShrink: null,
+        pricePerCarton: null,
+        pricePerBale: null,
+        shrinkCount: null,
+        cartonCount: null,
+        baleCount: null,
+        buyPrice: wholesale
+      };
+
+      try {
+        const productsRef = ref(database, 'products');
+        const newRef = push(productsRef);
+        await set(newRef, newProduct);
+        alert('✅ تم إضافة المنتج بنجاح');
+        closeModal();
+        loadProducts();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الإضافة: ' + e.message);
+      }
+    };
+
+    window.openEditProduct = function(key) {
+      // جلب بيانات المنتج
+      get(ref(database, `products/${key}`)).then(snap => {
+        if (!snap.exists()) {
+          alert('المنتج غير موجود');
+          return;
+        }
+        const p = snap.val();
+        openModal('تعديل المنتج', `
+          <form id="editProductForm" onsubmit="updateProduct('${key}', event)">
+            <div class="form-group">
+              <label>اسم المنتج</label>
+              <input type="text" id="e_name" value="${p.name || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>سعر الجملة</label>
+              <input type="number" id="e_wholesale" value="${p.wholesale || ''}" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>سعر التجزئة</label>
+              <input type="text" id="e_retail" value="${p.retail || ''}">
+            </div>
+            <div class="form-group">
+              <label>الكمية</label>
+              <input type="number" id="e_qty" value="${p.qty || ''}">
+            </div>
+            <div class="form-group">
+              <label>رابط الصورة</label>
+              <input type="url" id="e_image" value="${p.imageUrl || ''}" placeholder="https://i.ibb.co/...">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> تحديث</button>
+          </form>
+        `);
+      });
+    };
+
+    window.updateProduct = async function(key, e) {
+      e.preventDefault();
+      const name = document.getElementById('e_name').value.trim();
+      const wholesale = parseFloat(document.getElementById('e_wholesale').value) || 0;
+      const retail = document.getElementById('e_retail').value.trim();
+      const qty = parseInt(document.getElementById('e_qty').value) || 0;
+      const imageUrl = document.getElementById('e_image').value.trim();
+
+      if (!name) {
+        alert('الرجاء إدخال اسم المنتج');
+        return;
+      }
+
+      try {
+        await update(ref(database, `products/${key}`), {
+          name,
+          wholesale,
+          retail,
+          qty,
+          imageUrl: imageUrl || '',
+          pricePerPiece: parseFloat(retail) || 0,
+          buyPrice: wholesale
+        });
+        alert('✅ تم تحديث المنتج بنجاح');
+        closeModal();
+        loadProducts();
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    window.deleteProduct = async function(key) {
+      if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+      try {
+        await remove(ref(database, `products/${key}`));
+        alert('✅ تم حذف المنتج');
+        loadProducts();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الحذف: ' + e.message);
+      }
+    };
+
+    // ===== دوال إدارة السلايدر =====
+    window.openAddSlider = function() {
+      openModal('إضافة صورة للسلايدر', `
+        <form id="sliderForm" onsubmit="addSliderImage(event)">
+          <div class="form-group">
+            <label>رابط الصورة</label>
+            <input type="url" id="s_url" placeholder="https://i.ibb.co/..." required>
+          </div>
+          <div class="form-group">
+            <label>الترتيب (رقم)</label>
+            <input type="number" id="s_order" value="1">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> إضافة</button>
+        </form>
+      `);
+    };
+
+    window.addSliderImage = async function(e) {
+      e.preventDefault();
+      const url = document.getElementById('s_url').value.trim();
+      const order = parseInt(document.getElementById('s_order').value) || 1;
+
+      if (!url) {
+        alert('الرجاء إدخال رابط الصورة');
+        return;
+      }
+
+      try {
+        const sliderRef = ref(database, 'slider/images');
+        const newRef = push(sliderRef);
+        await set(newRef, { url, order, id: newRef.key });
+        alert('✅ تم إضافة الصورة بنجاح');
+        closeModal();
+        loadSlider();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الإضافة: ' + e.message);
+      }
+    };
+
+    window.deleteSliderImage = async function(key) {
+      if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
+      try {
+        await remove(ref(database, `slider/images/${key}`));
+        alert('✅ تم حذف الصورة');
+        loadSlider();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الحذف: ' + e.message);
+      }
+    };
+
+    // ===== دوال إدارة المنيو =====
+    window.openAddMenu = function() {
+      openModal('إضافة رابط جديد', `
+        <form id="menuForm" onsubmit="addMenuLink(event)">
+          <div class="form-group">
+            <label>اسم الرابط</label>
+            <input type="text" id="m_name" placeholder="مثال: اتصل بنا" required>
+          </div>
+          <div class="form-group">
+            <label>الرابط (URL)</label>
+            <input type="text" id="m_url" placeholder="مثال: contact.html" required>
+          </div>
+          <div class="form-group">
+            <label>الترتيب (رقم)</label>
+            <input type="number" id="m_order" value="1">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> إضافة</button>
+        </form>
+      `);
+    };
+
+    window.addMenuLink = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('m_name').value.trim();
+      const url = document.getElementById('m_url').value.trim();
+      const order = parseInt(document.getElementById('m_order').value) || 1;
+
+      if (!name || !url) {
+        alert('الرجاء إدخال جميع البيانات');
+        return;
+      }
+
+      try {
+        const menuRef = ref(database, 'menu/links');
+        const newRef = push(menuRef);
+        await set(newRef, { name, url, order, id: newRef.key });
+        alert('✅ تم إضافة الرابط بنجاح');
+        closeModal();
+        loadMenu();
+        loadMenuLinks();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الإضافة: ' + e.message);
+      }
+    };
+
+    window.openEditMenu = function(key) {
+      get(ref(database, `menu/links/${key}`)).then(snap => {
+        if (!snap.exists()) { alert('الرابط غير موجود'); return; }
+        const m = snap.val();
+        openModal('تعديل الرابط', `
+          <form id="editMenuForm" onsubmit="updateMenuLink('${key}', event)">
+            <div class="form-group">
+              <label>اسم الرابط</label>
+              <input type="text" id="em_name" value="${m.name || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>الرابط (URL)</label>
+              <input type="text" id="em_url" value="${m.url || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>الترتيب (رقم)</label>
+              <input type="number" id="em_order" value="${m.order || 1}">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> تحديث</button>
+          </form>
+        `);
+      });
+    };
+
+    window.updateMenuLink = async function(key, e) {
+      e.preventDefault();
+      const name = document.getElementById('em_name').value.trim();
+      const url = document.getElementById('em_url').value.trim();
+      const order = parseInt(document.getElementById('em_order').value) || 1;
+
+      try {
+        await update(ref(database, `menu/links/${key}`), { name, url, order });
+        alert('✅ تم تحديث الرابط');
+        closeModal();
+        loadMenu();
+        loadMenuLinks();
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    window.deleteMenuLink = async function(key) {
+      if (!confirm('هل أنت متأكد من حذف هذا الرابط؟')) return;
+      try {
+        await remove(ref(database, `menu/links/${key}`));
+        alert('✅ تم حذف الرابط');
+        loadMenu();
+        loadMenuLinks();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الحذف: ' + e.message);
+      }
+    };
+
+    // ===== دوال إدارة الكروت =====
+    window.openAddCard = function() {
+      openModal('إضافة كارت جديد', `
+        <form id="cardForm" onsubmit="addCard(event)">
+          <div class="form-group">
+            <label>أيقونة Font Awesome (بدون fa-)</label>
+            <input type="text" id="c_icon" placeholder="مثال: store" required>
+          </div>
+          <div class="form-group">
+            <label>العنوان</label>
+            <input type="text" id="c_title" placeholder="عنوان الكارت" required>
+          </div>
+          <div class="form-group">
+            <label>الوصف</label>
+            <input type="text" id="c_desc" placeholder="وصف الكارت">
+          </div>
+          <div class="form-group">
+            <label>الرابط (URL)</label>
+            <input type="text" id="c_link" placeholder="مثال: index.html">
+          </div>
+          <div class="form-group">
+            <label>الترتيب (رقم)</label>
+            <input type="number" id="c_order" value="1">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> إضافة</button>
+        </form>
+      `);
+    };
+
+    window.addCard = async function(e) {
+      e.preventDefault();
+      const icon = document.getElementById('c_icon').value.trim();
+      const title = document.getElementById('c_title').value.trim();
+      const description = document.getElementById('c_desc').value.trim();
+      const link = document.getElementById('c_link').value.trim();
+      const order = parseInt(document.getElementById('c_order').value) || 1;
+
+      if (!icon || !title) {
+        alert('الرجاء إدخال الأيقونة والعنوان');
+        return;
+      }
+
+      try {
+        const cardsRef = ref(database, 'homeCards/cards');
+        const newRef = push(cardsRef);
+        await set(newRef, { 
+          icon: `fa-${icon}`,
+          title,
+          description,
+          link: link || '#',
+          order,
+          id: newRef.key
+        });
+        alert('✅ تم إضافة الكارت بنجاح');
+        closeModal();
+        loadCards();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الإضافة: ' + e.message);
+      }
+    };
+
+    window.openEditCard = function(key) {
+      get(ref(database, `homeCards/cards/${key}`)).then(snap => {
+        if (!snap.exists()) { alert('الكارت غير موجود'); return; }
+        const c = snap.val();
+        const iconClean = (c.icon || '').replace('fa-', '');
+        openModal('تعديل الكارت', `
+          <form id="editCardForm" onsubmit="updateCard('${key}', event)">
+            <div class="form-group">
+              <label>أيقونة Font Awesome (بدون fa-)</label>
+              <input type="text" id="ec_icon" value="${iconClean}" required>
+            </div>
+            <div class="form-group">
+              <label>العنوان</label>
+              <input type="text" id="ec_title" value="${c.title || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>الوصف</label>
+              <input type="text" id="ec_desc" value="${c.description || ''}">
+            </div>
+            <div class="form-group">
+              <label>الرابط (URL)</label>
+              <input type="text" id="ec_link" value="${c.link || '#'}">
+            </div>
+            <div class="form-group">
+              <label>الترتيب (رقم)</label>
+              <input type="number" id="ec_order" value="${c.order || 1}">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> تحديث</button>
+          </form>
+        `);
+      });
+    };
+
+    window.updateCard = async function(key, e) {
+      e.preventDefault();
+      const icon = document.getElementById('ec_icon').value.trim();
+      const title = document.getElementById('ec_title').value.trim();
+      const description = document.getElementById('ec_desc').value.trim();
+      const link = document.getElementById('ec_link').value.trim();
+      const order = parseInt(document.getElementById('ec_order').value) || 1;
+
+      try {
+        await update(ref(database, `homeCards/cards/${key}`), {
+          icon: `fa-${icon}`,
+          title,
+          description,
+          link: link || '#',
+          order
+        });
+        alert('✅ تم تحديث الكارت');
+        closeModal();
+        loadCards();
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    window.deleteCard = async function(key) {
+      if (!confirm('هل أنت متأكد من حذف هذا الكارت؟')) return;
+      try {
+        await remove(ref(database, `homeCards/cards/${key}`));
+        alert('✅ تم حذف الكارت');
+        loadCards();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الحذف: ' + e.message);
+      }
+    };
+
+    // ===== دوال إدارة المسؤولين =====
+    window.openAddAdmin = function() {
+      openModal('إضافة مسؤول جديد', `
+        <form id="adminForm" onsubmit="addAdmin(event)">
+          <div class="form-group">
+            <label>الإيميل</label>
+            <input type="email" id="a_email" required>
+          </div>
+          <div class="form-group">
+            <label>الاسم</label>
+            <input type="text" id="a_name" required>
+          </div>
+          <div class="form-group">
+            <label>الدور</label>
+            <select id="a_role">
+              <option value="admin">أدمن</option>
+              <option value="super_admin">سوبر أدمن</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>رابط الصورة (اختياري)</label>
+            <input type="url" id="a_image" placeholder="https://i.ibb.co/...">
+          </div>
+          <div style="background:#fff3cd;padding:12px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#856404;">
+            <i class="fas fa-info-circle"></i> سيتم حفظ المسؤول مع UID فارغ. بعد إنشاء الحساب في Firebase Authentication، قم بتعديل UID يدوياً.
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> إضافة</button>
+        </form>
+      `);
+    };
+
+    window.addAdmin = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('a_email').value.trim();
+      const name = document.getElementById('a_name').value.trim();
+      const role = document.getElementById('a_role').value;
+      const imageUrl = document.getElementById('a_image').value.trim();
+
+      if (!email || !name) {
+        alert('الرجاء إدخال الإيميل والاسم');
+        return;
+      }
+
+      try {
+        const adminsRef = ref(database, 'admins');
+        const newRef = push(adminsRef);
+        await set(newRef, {
+          email,
+          name,
+          role,
+          imageUrl: imageUrl || '',
+          uid: '',
+          addedAt: new Date().toISOString()
+        });
+        alert('✅ تم إضافة المسؤول بنجاح. يرجى إضافة UID بعد إنشاء الحساب في Firebase Authentication.');
+        closeModal();
+        loadAdmins();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الإضافة: ' + e.message);
+      }
+    };
+
+    window.openEditAdmin = function(key) {
+      get(ref(database, `admins/${key}`)).then(snap => {
+        if (!snap.exists()) { alert('المسؤول غير موجود'); return; }
+        const a = snap.val();
+        openModal('تعديل المسؤول', `
+          <form id="editAdminForm" onsubmit="updateAdmin('${key}', event)">
+            <div class="form-group">
+              <label>الاسم</label>
+              <input type="text" id="ea_name" value="${a.name || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>الإيميل</label>
+              <input type="email" id="ea_email" value="${a.email || ''}" required>
+            </div>
+            <div class="form-group">
+              <label>الدور</label>
+              <select id="ea_role">
+                <option value="admin" ${a.role === 'admin' ? 'selected' : ''}>أدمن</option>
+                <option value="super_admin" ${a.role === 'super_admin' ? 'selected' : ''}>سوبر أدمن</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>رابط الصورة</label>
+              <input type="url" id="ea_image" value="${a.imageUrl || ''}" placeholder="https://i.ibb.co/...">
+            </div>
+            <div class="form-group">
+              <label>UID (اتركه فارغاً إذا لم يضاف بعد)</label>
+              <input type="text" id="ea_uid" value="${a.uid || ''}" placeholder="أضف UID من Firebase Authentication">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> تحديث</button>
+          </form>
+        `);
+      });
+    };
+
+    window.updateAdmin = async function(key, e) {
+      e.preventDefault();
+      const name = document.getElementById('ea_name').value.trim();
+      const email = document.getElementById('ea_email').value.trim();
+      const role = document.getElementById('ea_role').value;
+      const imageUrl = document.getElementById('ea_image').value.trim();
+      const uid = document.getElementById('ea_uid').value.trim();
+
+      try {
+        const updates = { name, email, role };
+        if (imageUrl) updates.imageUrl = imageUrl;
+        if (uid) updates.uid = uid;
+        await update(ref(database, `admins/${key}`), updates);
+        alert('✅ تم تحديث بيانات المسؤول');
+        closeModal();
+        loadAdmins();
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    window.deleteAdmin = async function(key) {
+      if (key === currentAdmin?.uid) {
+        alert('لا يمكن حذف حسابك الحالي');
+        return;
+      }
+      if (!confirm('هل أنت متأكد من حذف هذا المسؤول؟')) return;
+      try {
+        await remove(ref(database, `admins/${key}`));
+        alert('✅ تم حذف المسؤول');
+        loadAdmins();
+        updateStats();
+      } catch (e) {
+        alert('❌ خطأ في الحذف: ' + e.message);
+      }
+    };
+
+    // ===== المزامنة الشاملة =====
+    window.syncAllData = async function() {
+      const reportDiv = document.getElementById('syncReport');
+      reportDiv.style.display = 'block';
+      reportDiv.innerHTML = '<div class="sync-item"><i class="fas fa-spinner fa-spin"></i> جاري المزامنة...</div>';
+
+      const results = [];
+
+      try {
+        // 1. مزامنة المنتجات
+        const productsResult = await syncProducts();
+        results.push({ name: 'المنتجات', ...productsResult });
+
+        // 2. مزامنة السلايدر
+        const sliderResult = await syncSlider();
+        results.push({ name: 'السلايدر', ...sliderResult });
+
+        // 3. مزامنة المنيو
+        const menuResult = await syncMenu();
+        results.push({ name: 'المنيو', ...menuResult });
+
+        // 4. مزامنة الكروت
+        const cardsResult = await syncCards();
+        results.push({ name: 'كروت الرئيسية', ...cardsResult });
+
+        // 5. مزامنة الهيدر
+        const headerResult = await syncHeader();
+        results.push({ name: 'صورة الهيدر', ...headerResult });
+
+        // عرض التقرير
+        let html = '';
+        results.forEach(r => {
+          const status = r.added > 0 || r.updated > 0 ? 'success' : 'warning';
+          const icon = r.added > 0 || r.updated > 0 ? '✅' : 'ℹ️';
+          html += `<div class="sync-item ${status}">
+            ${icon} ${r.name}: تم إضافة ${r.added || 0}، تحديث ${r.updated || 0}${r.error ? `، خطأ: ${r.error}` : ''}
+          </div>`;
+        });
+        reportDiv.innerHTML = html;
+
+        // تحديث جميع الصفحات
+        loadAllData();
+        loadMenuLinks();
+
+      } catch (e) {
+        reportDiv.innerHTML = `<div class="sync-item error">❌ خطأ في المزامنة: ${e.message}</div>`;
+      }
+    };
+
+    // ===== دوال المزامنة الفرعية =====
+    async function syncProducts() {
+      const result = { added: 0, updated: 0 };
+      try {
+        const defaultProducts = window.DEFAULT_PRODUCTS || [];
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        const existing = snapshot.exists() ? snapshot.val() : {};
+
+        for (const p of defaultProducts) {
+          const key = `product_${p.id}`;
+          if (existing[key]) {
+            // تحديث
+            const current = existing[key];
+            if (current.name !== p.name || current.wholesale !== p.wholesale || current.retail !== p.retail || current.qty !== p.qty) {
+              await update(ref(database, `products/${key}`), {
+                name: p.name,
+                wholesale: p.wholesale,
+                retail: p.retail,
+                qty: p.qty,
+                pricePerPiece: parseFloat(p.retail) || 0,
+                buyPrice: p.wholesale
+              });
+              result.updated++;
+            }
+          } else {
+            // إضافة جديدة
+            await set(ref(database, `products/${key}`), {
+              name: p.name,
+              wholesale: p.wholesale,
+              retail: p.retail,
+              qty: p.qty,
+              pricePerPiece: parseFloat(p.retail) || 0,
+              pricePerShrink: null,
+              pricePerCarton: null,
+              pricePerBale: null,
+              shrinkCount: null,
+              cartonCount: null,
+              baleCount: null,
+              buyPrice: p.wholesale,
+              imageUrl: ""
+            });
+            result.added++;
+          }
+        }
+      } catch (e) {
+        result.error = e.message;
+      }
+      return result;
+    }
+
+    async function syncSlider() {
+      const result = { added: 0, updated: 0 };
+      try {
+        const defaultSlider = window.DEFAULT_SLIDER?.images || [];
+        const sliderRef = ref(database, 'slider/images');
+        const snapshot = await get(sliderRef);
+        const existing = snapshot.exists() ? snapshot.val() : {};
+
+        for (const img of defaultSlider) {
+          const key = img.id || `img_${Date.now()}_${Math.random()}`;
+          if (!existing[key]) {
+            await set(ref(database, `slider/images/${key}`), {
+              url: img.url,
+              order: img.order || 1,
+              id: key
+            });
+            result.added++;
+          }
+        }
+      } catch (e) {
+        result.error = e.message;
+      }
+      return result;
+    }
+
+    async function syncMenu() {
+      const result = { added: 0, updated: 0 };
+      try {
+        const defaultMenu = window.DEFAULT_MENU?.links || [];
+        const menuRef = ref(database, 'menu/links');
+        const snapshot = await get(menuRef);
+        const existing = snapshot.exists() ? snapshot.val() : {};
+
+        for (const link of defaultMenu) {
+          const key = link.id || `link_${Date.now()}_${Math.random()}`;
+          if (!existing[key]) {
+            await set(ref(database, `menu/links/${key}`), {
+              name: link.name,
+              url: link.url,
+              order: link.order || 1,
+              id: key
+            });
+            result.added++;
+          }
+        }
+      } catch (e) {
+        result.error = e.message;
+      }
+      return result;
+    }
+
+    async function syncCards() {
+      const result = { added: 0, updated: 0 };
+      try {
+        const defaultCards = window.DEFAULT_CARDS?.cards || [];
+        const cardsRef = ref(database, 'homeCards/cards');
+        const snapshot = await get(cardsRef);
+        const existing = snapshot.exists() ? snapshot.val() : {};
+
+        for (const card of defaultCards) {
+          const key = card.id || `card_${Date.now()}_${Math.random()}`;
+          if (!existing[key]) {
+            await set(ref(database, `homeCards/cards/${key}`), {
+              icon: card.icon || 'fa-circle',
+              title: card.title || '',
+              description: card.description || '',
+              link: card.link || '#',
+              order: card.order || 1,
+              id: key
+            });
+            result.added++;
+          }
+        }
+      } catch (e) {
+        result.error = e.message;
+      }
+      return result;
+    }
+
+    async function syncHeader() {
+      const result = { added: 0, updated: 0 };
+      try {
+        const defaultHeader = window.DEFAULT_HEADER?.imageUrl || 'https://i.ibb.co/LhJVbMVM/19020.png';
+        const headerRef = ref(database, 'header/imageUrl');
+        const snapshot = await get(headerRef);
+        if (!snapshot.exists()) {
+          await set(headerRef, defaultHeader);
+          result.added = 1;
+        } else if (snapshot.val() !== defaultHeader) {
+          await set(headerRef, defaultHeader);
+          result.updated = 1;
+        }
+      } catch (e) {
+        result.error = e.message;
+      }
+      return result;
+    }
+
+    // ===== استيراد المنتجات =====
+    window.importProducts = async function() {
+      if (!confirm('سيتم استيراد جميع المنتجات الافتراضية (221 منتج). هل أنت متأكد؟')) return;
+      
+      const reportDiv = document.getElementById('syncReport');
+      reportDiv.style.display = 'block';
+      reportDiv.innerHTML = '<div class="sync-item"><i class="fas fa-spinner fa-spin"></i> جاري الاستيراد...</div>';
+
+      try {
+        const result = await syncProducts();
+        reportDiv.innerHTML = `
+          <div class="sync-item success">✅ تم استيراد ${result.added} منتج جديد، تحديث ${result.updated} منتج</div>
+        `;
+        loadProducts();
+        updateStats();
+      } catch (e) {
+        reportDiv.innerHTML = `<div class="sync-item error">❌ خطأ: ${e.message}</div>`;
+      }
+    };
+
+    // ===== تصدير JSON =====
+    window.exportJSON = async function() {
+      try {
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        const data = snapshot.exists() ? snapshot.val() : {};
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `products_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ تم تصدير JSON بنجاح');
+      } catch (e) {
+        alert('❌ خطأ في التصدير: ' + e.message);
+      }
+    };
+
+    // ===== تصدير HTML =====
+    window.exportHTML = async function() {
+      try {
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        const products = snapshot.exists() ? Object.values(snapshot.val()) : [];
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المنتجات - أولاد شعلان</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: 'Tahoma', sans-serif; direction: rtl; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    .header { background: #1a2a6c; color: white; padding: 15px; border-radius: 10px 10px 0 0; }
+    .product { border-bottom: 1px solid #eee; padding: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .product:hover { background: #f9f9f9; }
+    .count { background: #2d4373; color: white; padding: 5px 15px; border-radius: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-boxes"></i> المنتجات - أولاد شعلان</h1>
+      <p>تم التصدير بتاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+    </div>
+    <div style="padding:15px;">
+      <div class="count">عدد المنتجات: ${products.length}</div>
+      ${products.map((p, i) => `
+        <div class="product">
+          <span><strong>${i+1}.</strong> ${p.name || ''}</span>
+          <span>الجملة: ${p.wholesale || ''} | التجزئة: ${p.retail || ''} | الكمية: ${p.qty || ''}</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+</body>
+</html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `products_${new Date().toISOString().slice(0,10)}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ تم تصدير HTML بنجاح');
+      } catch (e) {
+        alert('❌ خطأ في التصدير: ' + e.message);
+      }
+    };
+
+    // ===== تحديث صفحة المنتجات الاحتياطية =====
+    window.updateOfflinePage = async function() {
+      try {
+        const productsRef = ref(database, 'products');
+        const snapshot = await get(productsRef);
+        const products = snapshot.exists() ? Object.values(snapshot.val()) : [];
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المنتجات - أولاد شعلان (نسخة احتياطية)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: 'Tahoma', sans-serif; direction: rtl; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    .header { background: #1a2a6c; color: white; padding: 15px; border-radius: 10px 10px 0 0; }
+    .product { border-bottom: 1px solid #eee; padding: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .product:hover { background: #f9f9f9; }
+    .count { background: #2d4373; color: white; padding: 5px 15px; border-radius: 20px; }
+    .offline-badge { background: #e74c3c; color: white; padding: 8px 16px; border-radius: 5px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-boxes"></i> المنتجات - أولاد شعلان</h1>
+      <p>نسخة احتياطية - تعمل بدون إنترنت</p>
+      <p>آخر تحديث: ${new Date().toLocaleDateString('ar-EG')}</p>
+    </div>
+    <div class="offline-badge"><i class="fas fa-wifi-slash"></i> هذه نسخة احتياطية - تعمل عند انقطاع الإنترنت</div>
+    <div style="padding:15px;">
+      <div class="count">عدد المنتجات: ${products.length}</div>
+      ${products.map((p, i) => `
+        <div class="product">
+          <span><strong>${i+1}.</strong> ${p.name || ''}</span>
+          <span>الجملة: ${p.wholesale || ''} | التجزئة: ${p.retail || ''} | الكمية: ${p.qty || ''}</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+</body>
+</html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products-data.html';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ تم تحديث صفحة المنتجات الاحتياطية بنجاح!');
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    // ===== تعديل الملف الشخصي =====
+    window.editProfile = function() {
+      openModal('تعديل الملف الشخصي', `
+        <form id="profileForm" onsubmit="updateProfile(event)">
+          <div class="form-group">
+            <label>الاسم</label>
+            <input type="text" id="prof_name" value="${currentAdminData?.name || ''}" required>
+          </div>
+          <div class="form-group">
+            <label>رابط الصورة الجديد (اختياري)</label>
+            <input type="url" id="prof_image" placeholder="https://i.ibb.co/...">
+          </div>
+          <div style="background:#e8f4f8;padding:12px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0c5460;">
+            <i class="fas fa-info-circle"></i> اترك حقل الصورة فارغاً إذا لم ترد تغييرها.
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> حفظ التغييرات</button>
+        </form>
+      `);
+    };
+
+    window.updateProfile = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('prof_name').value.trim();
+      const imageUrl = document.getElementById('prof_image').value.trim();
+
+      if (!name) {
+        alert('الرجاء إدخال الاسم');
+        return;
+      }
+
+      try {
+        const updates = { name };
+        if (imageUrl) {
+          updates.imageUrl = imageUrl;
+        }
+        await update(ref(database, `admins/${currentAdmin.uid}`), updates);
+        
+        // تحديث العرض
+        currentAdminData.name = name;
+        if (imageUrl) {
+          currentAdminData.imageUrl = imageUrl;
+          document.getElementById('adminAvatar').src = imageUrl;
+        }
+        document.getElementById('adminName').textContent = name;
+        
+        alert('✅ تم تحديث الملف الشخصي بنجاح');
+        closeModal();
+        loadAdmins();
+      } catch (e) {
+        alert('❌ خطأ في التحديث: ' + e.message);
+      }
+    };
+
+    // ===== Toggle Menu =====
+    window.toggleMenu = function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    };
+	//====== تهيئة العقد ======
+	window.initializeDatabase = async function() {
+  if (!confirm('سيتم إضافة جميع العقد الافتراضية (المنتجات, admins, slider, menu, cards, header). هل أنت متأكد؟')) return;
+  
+  try {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...';
+    
+    // =============================================
+    // 1. إضافة المنتجات (من DEFAULT_PRODUCTS)
+    // =============================================
+    console.log('📦 جاري إضافة المنتجات...');
+    const products = window.DEFAULT_PRODUCTS || [];
+    let addedCount = 0;
+    
+    for (const p of products) {
+      const key = `product_${p.id}`;
+      await set(ref(database, `products/${key}`), {
+        name: p.name,
+        wholesale: p.wholesale,
+        retail: p.retail,
+        qty: p.qty,
+        pricePerPiece: parseFloat(p.retail) || 0,
+        pricePerShrink: null,
+        pricePerCarton: null,
+        pricePerBale: null,
+        shrinkCount: null,
+        cartonCount: null,
+        baleCount: null,
+        buyPrice: p.wholesale,
+        imageUrl: "",
+        id: p.id
+      });
+      addedCount++;
+    }
+    console.log(`✅ تم إضافة ${addedCount} منتج`);
+    
+    // =============================================
+    // 2. إضافة admins
+    // =============================================
+    console.log('👤 جاري إضافة المسؤولين...');
+    await set(ref(database, `admins/${SUPER_ADMIN.uid}`), {
+      email: SUPER_ADMIN.email,
+      name: SUPER_ADMIN.name,
+      role: SUPER_ADMIN.role,
+      imageUrl: SUPER_ADMIN.imageUrl,
+      uid: SUPER_ADMIN.uid,
+      addedAt: new Date().toISOString()
+    });
+    
+    // =============================================
+    // 3. إضافة السلايدر
+    // =============================================
+    console.log('🖼️ جاري إضافة السلايدر...');
+    await set(ref(database, 'slider/images'), {
+      img1: { id: 'img1', url: 'https://i.ibb.co/LhJVbMVM/19020.png', order: 1 },
+      img2: { id: 'img2', url: 'https://i.ibb.co/mVtrf67C/19023.png', order: 2 }
+    });
+    
+    // =============================================
+    // 4. إضافة المنيو
+    // =============================================
+    console.log('📋 جاري إضافة المنيو...');
+    await set(ref(database, 'menu/links'), {
+      link1: { id: 'link1', name: 'الرئيسية', url: 'home.html', order: 1 },
+      link2: { id: 'link2', name: 'عرض الأسعار', url: 'index.html', order: 2 }
+    });
+    
+    // =============================================
+    // 5. إضافة الكروت
+    // =============================================
+    console.log('🃏 جاري إضافة الكروت...');
+    await set(ref(database, 'homeCards/cards'), {
+      card1: { id: 'card1', icon: 'fa-store', title: 'عرض الأسعار', description: 'ابحث عن سعر أي منتج', link: 'index.html', order: 1 },
+      card2: { id: 'card2', icon: 'fa-image', title: 'معرض المنتجات', description: 'شاهد جميع المنتجات', link: '#', order: 2 }
+    });
+    
+    // =============================================
+    // 6. إضافة الهيدر
+    // =============================================
+    console.log('🖼️ جاري إضافة الهيدر...');
+    await set(ref(database, 'header/imageUrl'), 'https://i.ibb.co/LhJVbMVM/19020.png');
+    
+    // =============================================
+    // ✅ تم الانتهاء
+    // =============================================
+    alert(`✅ تم تهيئة قاعدة البيانات بنجاح!\n✅ تم إضافة ${addedCount} منتج`);
+    location.reload();
+    
+  } catch (e) {
+    console.error('❌ خطأ:', e);
+    alert('❌ خطأ: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-database"></i> تهيئة قاعدة البيانات';
+  }
+};
+  </script>
+</body>
+</html>

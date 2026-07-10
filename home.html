@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الرئيسية - أولاد شعلان</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ===== Hero Section ===== */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #1a2a6c, #2d4373);
+      color: white;
+      padding: 60px 0;
+      text-align: center;
+      overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero img {
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .hero h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .hero p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* ===== Slider ===== */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 30px auto;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+    .slider-wrapper {
+      display: flex;
+      transition: transform 0.6s ease-in-out;
+    }
+    .slider-slide {
+      min-width: 100%;
+      position: relative;
+    }
+    .slider-slide img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+    }
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      cursor: pointer;
+      font-size: 24px;
+      z-index: 10;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .slider-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    .slider-btn.prev { left: 15px; }
+    .slider-btn.next { right: 15px; }
+    .slider-dots {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .slider-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .slider-dot.active {
+      background: white;
+      transform: scale(1.2);
+    }
+
+    /* ===== Cards ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 20px 0;
+    }
+    .card-item {
+      background: white;
+      border-radius: 15px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .card-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .card-item i {
+      font-size: 48px;
+      color: #1a2a6c;
+      margin-bottom: 15px;
+    }
+    .card-item h3 {
+      color: #1a2a6c;
+      margin-bottom: 8px;
+    }
+    .card-item p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .slider-slide img { height: 250px; }
+      .hero { padding: 30px 0; min-height: 200px; }
+      .hero h1 { font-size: 24px; }
+      .hero img { max-height: 150px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="brand">
+        <i class="fas fa-store-alt"></i>
+        <span>أولاد شعلان</span>
+      </div>
+      <button class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html" class="active"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="index.html"><i class="fas fa-tags"></i> عرض الأسعار</a></li>
+        <!-- الروابط الديناميكية ستضاف هنا -->
+        <li id="dynamicLinks"></li>
+        <li><a href="login.html"><i class="fas fa-user-lock"></i> دخول</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== Hero Section ===== -->
+  <section class="hero">
+    <div class="container hero-content">
+      <img id="headerImage" src="https://i.ibb.co/LhJVbMVM/19020.png" alt="أولاد شعلان">
+      <h1>مرحباً بكم في أولاد شعلان</h1>
+      <p>أكبر تشكيلة من المنتجات بأفضل الأسعار</p>
+    </div>
+  </section>
+
+  <!-- ===== Slider ===== -->
+  <div class="container">
+    <div class="slider-container" id="sliderContainer">
+      <div class="slider-wrapper" id="sliderWrapper">
+        <!-- الصور تضاف ديناميكياً من Firebase -->
+      </div>
+      <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
+      <button class="slider-btn next" onclick="changeSlide(1)">❯</button>
+      <div class="slider-dots" id="sliderDots"></div>
+    </div>
+  </div>
+
+  <!-- ===== Cards Section ===== -->
+  <div class="container">
+    <h2 style="text-align:center; color:#1a2a6c; margin: 30px 0 10px;">
+      <i class="fas fa-th-large"></i> اكتشف خدماتنا
+    </h2>
+    <div class="cards-grid" id="cardsGrid">
+      <!-- الكروت تضاف ديناميكياً من Firebase -->
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="copyright">
+        <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026
+      </div>
+      <div class="credit">
+        تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Scripts ===== -->
+<script src="famo-sec.js"></script>  
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getDatabase, ref, get, onValue } from 'firebase/database';
+
+    const app = initializeApp(window.firebaseConfig);
+    const database = getDatabase(app);
+
+    // ===== متغيرات السلايدر =====
+    let currentSlide = 0;
+    let slides = [];
+
+    // ===== تحميل البيانات =====
+    async function loadData() {
+      try {
+        // 1. جلب صورة الهيدر
+        const headerRef = ref(database, 'header/imageUrl');
+        const headerSnap = await get(headerRef);
+        if (headerSnap.exists()) {
+          document.getElementById('headerImage').src = headerSnap.val();
+        }
+
+        // 2. جلب السلايدر
+        const sliderRef = ref(database, 'slider/images');
+        const sliderSnap = await get(sliderRef);
+        if (sliderSnap.exists()) {
+          const data = sliderSnap.val();
+          slides = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderSlider();
+        }
+
+        // 3. جلب كروت الرئيسية
+        const cardsRef = ref(database, 'homeCards/cards');
+        const cardsSnap = await get(cardsRef);
+        if (cardsSnap.exists()) {
+          const data = cardsSnap.val();
+          const cards = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderCards(cards);
+        }
+
+        // 4. جلب الروابط الديناميكية للمنيو
+        const menuRef = ref(database, 'menu/links');
+        const menuSnap = await get(menuRef);
+        if (menuSnap.exists()) {
+          const data = menuSnap.val();
+          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderMenuLinks(links);
+        }
+
+      } catch (e) {
+        console.error('Error loading data:', e);
+        // في حال الخطأ، استخدم البيانات الافتراضية
+        loadDefaultData();
+      }
+    }
+
+    // ===== تحميل البيانات الافتراضية (حال عدم وجود Firebase) =====
+    function loadDefaultData() {
+      // السلايدر الافتراضي
+      slides = window.DEFAULT_SLIDER.images || [
+        { id: 'img1', url: 'https://i.ibb.co/LhJVbMVM/19020.png', order: 1 },
+        { id: 'img2', url: 'https://i.ibb.co/mVtrf67C/19023.png', order: 2 }
+      ];
+      renderSlider();
+
+      // الكروت الافتراضية
+      const defaultCards = window.DEFAULT_CARDS?.cards || [
+        { id: 'card1', icon: 'fa-store', title: 'عرض الأسعار', description: 'ابحث عن سعر أي منتج', link: 'index.html', order: 1 },
+        { id: 'card2', icon: 'fa-image', title: 'معرض المنتجات', description: 'شاهد جميع المنتجات', link: '#', order: 2 }
+      ];
+      renderCards(defaultCards);
+
+      // المنيو الافتراضي
+      const defaultMenu = window.DEFAULT_MENU?.links || [
+        { id: 'link1', name: 'الرئيسية', url: 'home.html', order: 1 },
+        { id: 'link2', name: 'عرض الأسعار', url: 'index.html', order: 2 }
+      ];
+      renderMenuLinks(defaultMenu);
+    }
+
+    // ===== عرض السلايدر =====
+    function renderSlider() {
+      const wrapper = document.getElementById('sliderWrapper');
+      const dots = document.getElementById('sliderDots');
+      
+      if (!slides.length) {
+        wrapper.innerHTML = '<div style="padding:50px;text-align:center;color:#888;">لا توجد صور</div>';
+        return;
+      }
+
+      // عرض الصور
+      wrapper.innerHTML = slides.map(slide => `
+        <div class="slider-slide">
+          <img src="${slide.url}" alt="صورة ${slide.id}" loading="lazy">
+        </div>
+      `).join('');
+
+      // عرض النقاط
+      dots.innerHTML = slides.map((_, i) => `
+        <span class="slider-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>
+      `).join('');
+
+      currentSlide = 0;
+      updateSlider();
+    }
+
+    // ===== تحديث السلايدر =====
+    function updateSlider() {
+      const wrapper = document.getElementById('sliderWrapper');
+      const dots = document.querySelectorAll('.slider-dot');
+      wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    // ===== دوال السلايدر العامة =====
+    window.changeSlide = function(direction) {
+      const total = slides.length;
+      currentSlide = (currentSlide + direction + total) % total;
+      updateSlider();
+    };
+
+    window.goToSlide = function(index) {
+      currentSlide = index;
+      updateSlider();
+    };
+
+    // ===== عرض الكروت =====
+    function renderCards(cards) {
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = cards.map(card => `
+        <a href="${card.link || '#'}" class="card-item">
+          <i class="fas ${card.icon || 'fa-circle'}"></i>
+          <h3>${card.title || 'عنوان'}</h3>
+          <p>${card.description || ''}</p>
+        </a>
+      `).join('');
+    }
+
+    // ===== عرض روابط المنيو الديناميكية =====
+    function renderMenuLinks(links) {
+      const container = document.getElementById('dynamicLinks');
+      container.innerHTML = links.map(link => `
+        <li><a href="${link.url || '#'}"><i class="fas fa-link"></i> ${link.name || 'رابط'}</a></li>
+      `).join('');
+    }
+
+    // ===== Toggle Menu =====
+    window.toggleMenu = function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    };
+
+    // ===== الاستماع للتغييرات في الوقت الفعلي =====
+    function listenForChanges() {
+      // الاستماع لتغييرات السلايدر
+      const sliderRef = ref(database, 'slider/images');
+      onValue(sliderRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          slides = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderSlider();
+        }
+      });
+
+      // الاستماع لتغييرات الكروت
+      const cardsRef = ref(database, 'homeCards/cards');
+      onValue(cardsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const cards = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderCards(cards);
+        }
+      });
+
+      // الاستماع لتغييرات المنيو
+      const menuRef = ref(database, 'menu/links');
+      onValue(menuRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderMenuLinks(links);
+        }
+      });
+
+      // الاستماع لتغييرات الهيدر
+      const headerRef = ref(database, 'header/imageUrl');
+      onValue(headerRef, (snapshot) => {
+        if (snapshot.exists()) {
+          document.getElementById('headerImage').src = snapshot.val();
+        }
+      });
+    }
+
+    // ===== تشغيل السلايدر التلقائي =====
+    let autoSlideInterval;
+
+    function startAutoSlide() {
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+      autoSlideInterval = setInterval(() => {
+        if (slides.length > 0) {
+          changeSlide(1);
+        }
+      }, 5000);
+    }
+
+    // ===== تحميل الصفحة =====
+    await loadData();
+    listenForChanges();
+    startAutoSlide();
+
+    // إيقاف التشغيل التلقائي عند التفاعل
+    document.getElementById('sliderContainer').addEventListener('mouseenter', () => {
+      clearInterval(autoSlideInterval);
+    });
+    document.getElementById('sliderContainer').addEventListener('mouseleave', () => {
+      startAutoSlide();
+    });
+
+  </script>
+</body>
+</html>
