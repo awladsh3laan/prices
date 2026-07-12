@@ -7,6 +7,27 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    /* (نفس التنسيقات السابقة للـ index) */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; color: #333; direction: rtl; }
+    a { text-decoration: none; color: inherit; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .navbar {
+      background: linear-gradient(135deg, #1a2a6c, #2d4373);
+      color: white;
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .navbar .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .navbar .brand { font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .menu-toggle { display: none; background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 5px 10px; }
+    .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .nav-links li a { color: rgba(255,255,255,0.85); padding: 8px 16px; border-radius: 8px; transition: 0.3s; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+    .nav-links li a:hover { background: rgba(255,255,255,0.15); color: white; }
+    .nav-links li a.active { background: rgba(255,255,255,0.2); color: white; }
     .search-section {
       background: white;
       border-radius: 15px;
@@ -15,11 +36,7 @@
       margin: 30px auto;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-    .search-box {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+    .search-box { display: flex; gap: 15px; flex-wrap: wrap; }
     .search-box input {
       flex: 1;
       padding: 15px 20px;
@@ -28,10 +45,7 @@
       font-size: 18px;
       min-width: 200px;
     }
-    .search-box input:focus {
-      border-color: #1a2a6c;
-      outline: none;
-    }
+    .search-box input:focus { border-color: #1a2a6c; outline: none; }
     .search-box button {
       padding: 15px 35px;
       background: #1a2a6c;
@@ -43,17 +57,9 @@
       transition: 0.3s;
       white-space: nowrap;
     }
-    .search-box button:hover {
-      background: #2d4373;
-      transform: translateY(-2px);
-    }
-
-    .result-container {
-      margin-top: 30px;
-      display: none;
-    }
+    .search-box button:hover { background: #2d4373; transform: translateY(-2px); }
+    .result-container { margin-top: 30px; display: none; }
     .result-container.show { display: block; }
-
     .product-card {
       background: white;
       border-radius: 15px;
@@ -64,32 +70,11 @@
       flex-wrap: wrap;
       align-items: flex-start;
     }
-    .product-image {
-      flex: 0 0 200px;
-      max-width: 200px;
-    }
-    .product-image img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid #eee;
-    }
-    .product-info {
-      flex: 1;
-      min-width: 250px;
-    }
-    .product-info h2 {
-      color: #1a2a6c;
-      margin-bottom: 15px;
-      font-size: 24px;
-    }
-    .price-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 15px 0;
-    }
+    .product-image { flex: 0 0 200px; max-width: 200px; }
+    .product-image img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid #eee; }
+    .product-info { flex: 1; min-width: 250px; }
+    .product-info h2 { color: #1a2a6c; margin-bottom: 15px; font-size: 24px; }
+    .price-options { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
     .price-options button {
       padding: 10px 20px;
       border: 2px solid #e0e0e0;
@@ -100,51 +85,30 @@
       font-weight: bold;
     }
     .price-options button:hover,
-    .price-options button.active {
-      border-color: #1a2a6c;
-      background: #1a2a6c;
-      color: white;
-    }
-    .price-display {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 15px;
-    }
-    .price-display .price {
-      font-size: 28px;
-      color: #1a2a6c;
-      font-weight: bold;
-    }
-    .price-display .label {
-      font-size: 16px;
-      color: #666;
-    }
-    .price-display .sub-info {
-      font-size: 14px;
-      color: #888;
-      margin-top: 5px;
-    }
-    .wholesale-price {
-      margin-top: 10px;
-      padding: 10px;
-      background: #fff3cd;
-      border-radius: 8px;
-      color: #856404;
-      font-size: 14px;
-    }
-    .not-found {
+    .price-options button.active { border-color: #1a2a6c; background: #1a2a6c; color: white; }
+    .price-display { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 15px; }
+    .price-display .price { font-size: 28px; color: #1a2a6c; font-weight: bold; }
+    .price-display .label { font-size: 16px; color: #666; }
+    .price-display .sub-info { font-size: 14px; color: #888; margin-top: 5px; }
+    .wholesale-price { margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 14px; }
+    .not-found { text-align: center; padding: 40px; color: #888; }
+    .not-found i { font-size: 60px; color: #ddd; margin-bottom: 15px; }
+    .footer {
+      background: #1a1a2e;
+      color: #aaa;
+      padding: 30px 0;
+      margin-top: 40px;
       text-align: center;
-      padding: 40px;
-      color: #888;
+      border-top: 3px solid #2d4373;
     }
-    .not-found i {
-      font-size: 60px;
-      color: #ddd;
-      margin-bottom: 15px;
-    }
-
-    @media (max-width: 600px) {
+    .footer .copyright { font-size: 14px; letter-spacing: 0.5px; }
+    .footer .copyright i { color: #e74c3c; }
+    .footer .credit { font-size: 12px; font-weight: 300; color: #777; letter-spacing: 0.5px; }
+    .footer .credit span { color: #2d4373; font-weight: bold; }
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links { display: none; width: 100%; flex-direction: column; align-items: center; padding: 15px 0; gap: 10px; }
+      .nav-links.open { display: flex; }
       .product-image { flex: 0 0 100%; max-width: 100%; }
       .product-image img { height: 150px; }
       .price-display .price { font-size: 22px; }
@@ -192,56 +156,71 @@
   <!-- ===== Footer ===== -->
   <footer class="footer">
     <div class="container">
-      <div class="copyright">
-        <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026
-      </div>
-      <div class="credit">
-        تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span>
-      </div>
+      <div class="copyright"><i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026</div>
+      <div class="credit">تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span></div>
     </div>
   </footer>
 
-  <!-- ===== Scripts ===== -->
-<script src="famo-sec.js"></script>
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
-        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
-      }
-    }
-  </script>
-  <script type="module">
-    import { initializeApp } from 'firebase/app';
-    import { getDatabase, ref, get, onValue } from 'firebase/database';
+  <!-- ===== Firebase SDK ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    const app = initializeApp(window.firebaseConfig);
-    const database = getDatabase(app);
+  <script>
+    // =============================================
+    // 🔐 بيانات Firebase
+    // =============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKHRq7Bl6JQxXdWajIZBgch3TcHhzvI1g",
+      authDomain: "price-famo-app.firebaseapp.com",
+      databaseURL: "https://price-famo-app-default-rtdb.europe-west1.firebasedatabase.app/",
+      projectId: "price-famo-app",
+      storageBucket: "price-famo-app.firebasestorage.app",
+      messagingSenderId: "1077937125055",
+      appId: "1:1077937125055:web:03c9e3192ad5233e98b80a"
+    };
 
-    // ===== متغيرات =====
+    // =============================================
+    // 🚀 تهيئة Firebase
+    // =============================================
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    console.log("✅ Firebase initialized successfully!");
+
+    // =============================================
+    // 📦 متغيرات
+    // =============================================
     let allProducts = [];
     let currentProduct = null;
     let selectedUnit = 'piece';
 
-    // ===== تحميل المنتجات =====
+    // =============================================
+    // 📥 تحميل المنتجات
+    // =============================================
     async function loadProducts() {
       try {
-        const productsRef = ref(database, 'products');
-        const snapshot = await get(productsRef);
+        const snapshot = await database.ref('products').once('value');
         if (snapshot.exists()) {
           const data = snapshot.val();
           allProducts = Object.values(data);
         } else {
-          // استخدام البيانات الافتراضية
-          allProducts = window.DEFAULT_PRODUCTS || [];
+          // بيانات افتراضية (مدمجة هنا للاحتياط)
+          allProducts = [
+            { id: 1, name: "اوكسي اوتوماتيك كيلو ٢.٥", qty: 2, wholesale: 188, retail: "٢٠٠ - ٢١٠" },
+            { id: 2, name: "اوكسي اوتوماتيك ٢.٥ كيلو + ٤٠٠ جم", qty: 2, wholesale: 205, retail: "٢٣٠" }
+          ];
         }
+        console.log(`✅ تم تحميل ${allProducts.length} منتج`);
       } catch (e) {
         console.error('Error loading products:', e);
-        allProducts = window.DEFAULT_PRODUCTS || [];
+        allProducts = [
+          { id: 1, name: "اوكسي اوتوماتيك كيلو ٢.٥", qty: 2, wholesale: 188, retail: "٢٠٠ - ٢١٠" }
+        ];
       }
     }
 
-    // ===== البحث عن منتج =====
+    // =============================================
+    // 🔍 البحث عن منتج
+    // =============================================
     window.searchProduct = function() {
       const query = document.getElementById('searchInput').value.trim();
       const container = document.getElementById('resultContainer');
@@ -252,7 +231,6 @@
         return;
       }
 
-      // بحث غير حساس لحالة الأحرف
       const found = allProducts.find(p => 
         p.name && p.name.includes(query)
       );
@@ -274,11 +252,12 @@
       }
     };
 
-    // ===== عرض المنتج =====
+    // =============================================
+    // 📊 عرض المنتج
+    // =============================================
     function displayProduct(product) {
       const container = document.getElementById('resultContent');
       
-      // حساب الأسعار حسب الوحدة المختارة
       let price = product.retail || 'غير محدد';
       let unitLabel = 'القطعة';
       let subInfo = '';
@@ -300,7 +279,6 @@
         subInfo = `عدد القطع في البالة: ${product.baleCount || 'غير محدد'}`;
       }
 
-      // تنسيق السعر
       const priceDisplay = typeof price === 'number' ? `${price} جنيه` : price;
 
       container.innerHTML = `
@@ -344,7 +322,6 @@
       `;
     }
 
-    // ===== اختيار الوحدة =====
     window.selectUnit = function(unit) {
       selectedUnit = unit;
       if (currentProduct) {
@@ -352,16 +329,12 @@
       }
     };
 
-    // ===== Toggle Menu =====
-    window.toggleMenu = function() {
-      document.getElementById('navLinks').classList.toggle('open');
-    };
-
-    // ===== تحميل روابط المنيو =====
+    // =============================================
+    // 📋 دوال المنيو
+    // =============================================
     async function loadMenuLinks() {
       try {
-        const menuRef = ref(database, 'menu/links');
-        const snapshot = await get(menuRef);
+        const snapshot = await database.ref('menu/links').once('value');
         if (snapshot.exists()) {
           const data = snapshot.val();
           const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -375,32 +348,18 @@
       }
     }
 
-    // ===== الاستماع لتغييرات المنتجات (تحديث فوري) =====
-    function listenForProductChanges() {
-      const productsRef = ref(database, 'products');
-      onValue(productsRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          allProducts = Object.values(data);
-          // إذا كان هناك منتج معروض، أعد البحث عنه
-          if (document.getElementById('resultContainer').classList.contains('show')) {
-            const query = document.getElementById('searchInput').value.trim();
-            if (query) {
-              const found = allProducts.find(p => p.name && p.name.includes(query));
-              if (found) {
-                currentProduct = found;
-                displayProduct(found);
-              }
-            }
-          }
-        }
-      });
-    }
+    // =============================================
+    // 🔧 دوال مساعدة
+    // =============================================
+    window.toggleMenu = function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    };
 
-    // ===== التهيئة =====
+    // =============================================
+    // 🚀 تحميل الصفحة
+    // =============================================
     await loadProducts();
     await loadMenuLinks();
-    listenForProductChanges();
 
     // البحث التلقائي إذا كان هناك query في الـ URL
     const params = new URLSearchParams(window.location.search);
@@ -409,7 +368,6 @@
       document.getElementById('searchInput').value = searchQuery;
       searchProduct();
     }
-
   </script>
 </body>
 </html>

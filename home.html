@@ -7,7 +7,27 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* ===== Hero Section ===== */
+    /* (نفس التنسيقات السابقة للـ home) */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; color: #333; direction: rtl; }
+    a { text-decoration: none; color: inherit; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .navbar {
+      background: linear-gradient(135deg, #1a2a6c, #2d4373);
+      color: white;
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .navbar .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .navbar .brand { font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .menu-toggle { display: none; background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 5px 10px; }
+    .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .nav-links li a { color: rgba(255,255,255,0.85); padding: 8px 16px; border-radius: 8px; transition: 0.3s; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+    .nav-links li a:hover { background: rgba(255,255,255,0.15); color: white; }
+    .nav-links li a.active { background: rgba(255,255,255,0.2); color: white; }
     .hero {
       position: relative;
       background: linear-gradient(135deg, #1a2a6c, #2d4373);
@@ -28,25 +48,10 @@
       border-radius: 12px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-    .hero h1 {
-      font-size: 36px;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-    .hero p {
-      font-size: 18px;
-      opacity: 0.9;
-    }
-
-    /* ===== Slider ===== */
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+    .hero-content { position: relative; z-index: 2; }
+    .hero h1 { font-size: 36px; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    .hero p { font-size: 18px; opacity: 0.9; }
     .slider-container {
       position: relative;
       width: 100%;
@@ -56,20 +61,9 @@
       overflow: hidden;
       box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     }
-    .slider-wrapper {
-      display: flex;
-      transition: transform 0.6s ease-in-out;
-    }
-    .slider-slide {
-      min-width: 100%;
-      position: relative;
-    }
-    .slider-slide img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      display: block;
-    }
+    .slider-wrapper { display: flex; transition: transform 0.6s ease-in-out; }
+    .slider-slide { min-width: 100%; position: relative; }
+    .slider-slide img { width: 100%; height: 400px; object-fit: cover; display: block; }
     .slider-btn {
       position: absolute;
       top: 50%;
@@ -84,9 +78,7 @@
       border-radius: 50%;
       transition: 0.3s;
     }
-    .slider-btn:hover {
-      background: rgba(0,0,0,0.8);
-    }
+    .slider-btn:hover { background: rgba(0,0,0,0.8); }
     .slider-btn.prev { left: 15px; }
     .slider-btn.next { right: 15px; }
     .slider-dots {
@@ -106,12 +98,7 @@
       cursor: pointer;
       transition: 0.3s;
     }
-    .slider-dot.active {
-      background: white;
-      transform: scale(1.2);
-    }
-
-    /* ===== Cards ===== */
+    .slider-dot.active { background: white; transform: scale(1.2); }
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -127,25 +114,26 @@
       transition: 0.3s;
       cursor: pointer;
     }
-    .card-item:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    .card-item:hover { transform: translateY(-8px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+    .card-item i { font-size: 48px; color: #1a2a6c; margin-bottom: 15px; }
+    .card-item h3 { color: #1a2a6c; margin-bottom: 8px; }
+    .card-item p { color: #666; font-size: 14px; }
+    .footer {
+      background: #1a1a2e;
+      color: #aaa;
+      padding: 30px 0;
+      margin-top: 40px;
+      text-align: center;
+      border-top: 3px solid #2d4373;
     }
-    .card-item i {
-      font-size: 48px;
-      color: #1a2a6c;
-      margin-bottom: 15px;
-    }
-    .card-item h3 {
-      color: #1a2a6c;
-      margin-bottom: 8px;
-    }
-    .card-item p {
-      color: #666;
-      font-size: 14px;
-    }
-
+    .footer .copyright { font-size: 14px; letter-spacing: 0.5px; }
+    .footer .copyright i { color: #e74c3c; }
+    .footer .credit { font-size: 12px; font-weight: 300; color: #777; letter-spacing: 0.5px; }
+    .footer .credit span { color: #2d4373; font-weight: bold; }
     @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links { display: none; width: 100%; flex-direction: column; align-items: center; padding: 15px 0; gap: 10px; }
+      .nav-links.open { display: flex; }
       .slider-slide img { height: 250px; }
       .hero { padding: 30px 0; min-height: 200px; }
       .hero h1 { font-size: 24px; }
@@ -168,7 +156,6 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="home.html" class="active"><i class="fas fa-home"></i> الرئيسية</a></li>
         <li><a href="index.html"><i class="fas fa-tags"></i> عرض الأسعار</a></li>
-        <!-- الروابط الديناميكية ستضاف هنا -->
         <li id="dynamicLinks"></li>
         <li><a href="login.html"><i class="fas fa-user-lock"></i> دخول</a></li>
       </ul>
@@ -187,9 +174,7 @@
   <!-- ===== Slider ===== -->
   <div class="container">
     <div class="slider-container" id="sliderContainer">
-      <div class="slider-wrapper" id="sliderWrapper">
-        <!-- الصور تضاف ديناميكياً من Firebase -->
-      </div>
+      <div class="slider-wrapper" id="sliderWrapper"></div>
       <button class="slider-btn prev" onclick="changeSlide(-1)">❮</button>
       <button class="slider-btn next" onclick="changeSlide(1)">❯</button>
       <div class="slider-dots" id="sliderDots"></div>
@@ -201,113 +186,68 @@
     <h2 style="text-align:center; color:#1a2a6c; margin: 30px 0 10px;">
       <i class="fas fa-th-large"></i> اكتشف خدماتنا
     </h2>
-    <div class="cards-grid" id="cardsGrid">
-      <!-- الكروت تضاف ديناميكياً من Firebase -->
-    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
   </div>
 
   <!-- ===== Footer ===== -->
   <footer class="footer">
     <div class="container">
-      <div class="copyright">
-        <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026
-      </div>
-      <div class="credit">
-        تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span>
-      </div>
+      <div class="copyright"><i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ أولاد شعلان للمنظفات و الورقيات 2026</div>
+      <div class="credit">تم تصميم الموقع والتطبيق بواسطة <span>FAMO ELWAN</span></div>
     </div>
   </footer>
 
-  <!-- ===== Scripts ===== -->
-<script src="famo-sec.js"></script>  
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
-        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
-      }
-    }
-  </script>
-  <script type="module">
-    import { initializeApp } from 'firebase/app';
-    import { getDatabase, ref, get, onValue } from 'firebase/database';
+  <!-- ===== Firebase SDK ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    const app = initializeApp(window.firebaseConfig);
-    const database = getDatabase(app);
+  <script>
+    // =============================================
+    // 🔐 بيانات Firebase
+    // =============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKHRq7Bl6JQxXdWajIZBgch3TcHhzvI1g",
+      authDomain: "price-famo-app.firebaseapp.com",
+      databaseURL: "https://price-famo-app-default-rtdb.europe-west1.firebasedatabase.app/",
+      projectId: "price-famo-app",
+      storageBucket: "price-famo-app.firebasestorage.app",
+      messagingSenderId: "1077937125055",
+      appId: "1:1077937125055:web:03c9e3192ad5233e98b80a"
+    };
 
-    // ===== متغيرات السلايدر =====
+    // =============================================
+    // 🚀 تهيئة Firebase
+    // =============================================
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    console.log("✅ Firebase initialized successfully!");
+
+    // =============================================
+    // 🖼️ دوال السلايدر
+    // =============================================
     let currentSlide = 0;
     let slides = [];
 
-    // ===== تحميل البيانات =====
-    async function loadData() {
+    async function loadSlider() {
       try {
-        // 1. جلب صورة الهيدر
-        const headerRef = ref(database, 'header/imageUrl');
-        const headerSnap = await get(headerRef);
-        if (headerSnap.exists()) {
-          document.getElementById('headerImage').src = headerSnap.val();
-        }
-
-        // 2. جلب السلايدر
-        const sliderRef = ref(database, 'slider/images');
-        const sliderSnap = await get(sliderRef);
-        if (sliderSnap.exists()) {
-          const data = sliderSnap.val();
+        const snapshot = await database.ref('slider/images').once('value');
+        if (snapshot.exists()) {
+          const data = snapshot.val();
           slides = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderSlider();
+        } else {
+          // بيانات افتراضية
+          slides = [
+            { id: 'img1', url: 'https://i.ibb.co/LhJVbMVM/19020.png', order: 1 },
+            { id: 'img2', url: 'https://i.ibb.co/mVtrf67C/19023.png', order: 2 }
+          ];
         }
-
-        // 3. جلب كروت الرئيسية
-        const cardsRef = ref(database, 'homeCards/cards');
-        const cardsSnap = await get(cardsRef);
-        if (cardsSnap.exists()) {
-          const data = cardsSnap.val();
-          const cards = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderCards(cards);
-        }
-
-        // 4. جلب الروابط الديناميكية للمنيو
-        const menuRef = ref(database, 'menu/links');
-        const menuSnap = await get(menuRef);
-        if (menuSnap.exists()) {
-          const data = menuSnap.val();
-          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderMenuLinks(links);
-        }
-
+        renderSlider();
+        startAutoSlide();
       } catch (e) {
-        console.error('Error loading data:', e);
-        // في حال الخطأ، استخدم البيانات الافتراضية
-        loadDefaultData();
+        console.error('Error loading slider:', e);
       }
     }
 
-    // ===== تحميل البيانات الافتراضية (حال عدم وجود Firebase) =====
-    function loadDefaultData() {
-      // السلايدر الافتراضي
-      slides = window.DEFAULT_SLIDER.images || [
-        { id: 'img1', url: 'https://i.ibb.co/LhJVbMVM/19020.png', order: 1 },
-        { id: 'img2', url: 'https://i.ibb.co/mVtrf67C/19023.png', order: 2 }
-      ];
-      renderSlider();
-
-      // الكروت الافتراضية
-      const defaultCards = window.DEFAULT_CARDS?.cards || [
-        { id: 'card1', icon: 'fa-store', title: 'عرض الأسعار', description: 'ابحث عن سعر أي منتج', link: 'index.html', order: 1 },
-        { id: 'card2', icon: 'fa-image', title: 'معرض المنتجات', description: 'شاهد جميع المنتجات', link: '#', order: 2 }
-      ];
-      renderCards(defaultCards);
-
-      // المنيو الافتراضي
-      const defaultMenu = window.DEFAULT_MENU?.links || [
-        { id: 'link1', name: 'الرئيسية', url: 'home.html', order: 1 },
-        { id: 'link2', name: 'عرض الأسعار', url: 'index.html', order: 2 }
-      ];
-      renderMenuLinks(defaultMenu);
-    }
-
-    // ===== عرض السلايدر =====
     function renderSlider() {
       const wrapper = document.getElementById('sliderWrapper');
       const dots = document.getElementById('sliderDots');
@@ -317,14 +257,12 @@
         return;
       }
 
-      // عرض الصور
       wrapper.innerHTML = slides.map(slide => `
         <div class="slider-slide">
           <img src="${slide.url}" alt="صورة ${slide.id}" loading="lazy">
         </div>
       `).join('');
 
-      // عرض النقاط
       dots.innerHTML = slides.map((_, i) => `
         <span class="slider-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>
       `).join('');
@@ -333,7 +271,6 @@
       updateSlider();
     }
 
-    // ===== تحديث السلايدر =====
     function updateSlider() {
       const wrapper = document.getElementById('sliderWrapper');
       const dots = document.querySelectorAll('.slider-dot');
@@ -343,7 +280,6 @@
       });
     }
 
-    // ===== دوال السلايدر العامة =====
     window.changeSlide = function(direction) {
       const total = slides.length;
       currentSlide = (currentSlide + direction + total) % total;
@@ -355,97 +291,99 @@
       updateSlider();
     };
 
-    // ===== عرض الكروت =====
-    function renderCards(cards) {
-      const grid = document.getElementById('cardsGrid');
-      grid.innerHTML = cards.map(card => `
-        <a href="${card.link || '#'}" class="card-item">
-          <i class="fas ${card.icon || 'fa-circle'}"></i>
-          <h3>${card.title || 'عنوان'}</h3>
-          <p>${card.description || ''}</p>
-        </a>
-      `).join('');
-    }
-
-    // ===== عرض روابط المنيو الديناميكية =====
-    function renderMenuLinks(links) {
-      const container = document.getElementById('dynamicLinks');
-      container.innerHTML = links.map(link => `
-        <li><a href="${link.url || '#'}"><i class="fas fa-link"></i> ${link.name || 'رابط'}</a></li>
-      `).join('');
-    }
-
-    // ===== Toggle Menu =====
-    window.toggleMenu = function() {
-      document.getElementById('navLinks').classList.toggle('open');
-    };
-
-    // ===== الاستماع للتغييرات في الوقت الفعلي =====
-    function listenForChanges() {
-      // الاستماع لتغييرات السلايدر
-      const sliderRef = ref(database, 'slider/images');
-      onValue(sliderRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          slides = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderSlider();
-        }
-      });
-
-      // الاستماع لتغييرات الكروت
-      const cardsRef = ref(database, 'homeCards/cards');
-      onValue(cardsRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const cards = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderCards(cards);
-        }
-      });
-
-      // الاستماع لتغييرات المنيو
-      const menuRef = ref(database, 'menu/links');
-      onValue(menuRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
-          renderMenuLinks(links);
-        }
-      });
-
-      // الاستماع لتغييرات الهيدر
-      const headerRef = ref(database, 'header/imageUrl');
-      onValue(headerRef, (snapshot) => {
-        if (snapshot.exists()) {
-          document.getElementById('headerImage').src = snapshot.val();
-        }
-      });
-    }
-
-    // ===== تشغيل السلايدر التلقائي =====
     let autoSlideInterval;
 
     function startAutoSlide() {
       if (autoSlideInterval) clearInterval(autoSlideInterval);
       autoSlideInterval = setInterval(() => {
-        if (slides.length > 0) {
-          changeSlide(1);
-        }
+        if (slides.length > 0) changeSlide(1);
       }, 5000);
     }
 
-    // ===== تحميل الصفحة =====
-    await loadData();
-    listenForChanges();
-    startAutoSlide();
+    // =============================================
+    // 🃏 دوال الكروت
+    // =============================================
+    async function loadCards() {
+      try {
+        const snapshot = await database.ref('homeCards/cards').once('value');
+        const grid = document.getElementById('cardsGrid');
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const cards = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          grid.innerHTML = cards.map(card => `
+            <a href="${card.link || '#'}" class="card-item">
+              <i class="fas ${card.icon || 'fa-circle'}"></i>
+              <h3>${card.title || 'عنوان'}</h3>
+              <p>${card.description || ''}</p>
+            </a>
+          `).join('');
+        } else {
+          // بيانات افتراضية
+          grid.innerHTML = `
+            <a href="index.html" class="card-item"><i class="fas fa-store"></i><h3>عرض الأسعار</h3><p>ابحث عن سعر أي منتج</p></a>
+            <a href="#" class="card-item"><i class="fas fa-image"></i><h3>معرض المنتجات</h3><p>شاهد جميع المنتجات</p></a>
+          `;
+        }
+      } catch (e) {
+        console.error('Error loading cards:', e);
+      }
+    }
+
+    // =============================================
+    // 📋 دوال المنيو
+    // =============================================
+    async function loadMenuLinks() {
+      try {
+        const snapshot = await database.ref('menu/links').once('value');
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const links = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+          const container = document.getElementById('dynamicLinks');
+          container.innerHTML = links.map(link => `
+            <li><a href="${link.url || '#'}"><i class="fas fa-link"></i> ${link.name || 'رابط'}</a></li>
+          `).join('');
+        }
+      } catch (e) {
+        console.log('Menu load error:', e);
+      }
+    }
+
+    // =============================================
+    // 🖼️ دوال الهيدر
+    // =============================================
+    async function loadHeader() {
+      try {
+        const snapshot = await database.ref('header/imageUrl').once('value');
+        if (snapshot.exists()) {
+          document.getElementById('headerImage').src = snapshot.val();
+        }
+      } catch (e) {
+        console.error('Error loading header:', e);
+      }
+    }
+
+    // =============================================
+    // 🔧 دوال مساعدة
+    // =============================================
+    window.toggleMenu = function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    };
+
+    // =============================================
+    // 🚀 تحميل الصفحة
+    // =============================================
+    await loadHeader();
+    await loadSlider();
+    await loadCards();
+    await loadMenuLinks();
 
     // إيقاف التشغيل التلقائي عند التفاعل
-    document.getElementById('sliderContainer').addEventListener('mouseenter', () => {
+    document.getElementById('sliderContainer')?.addEventListener('mouseenter', () => {
       clearInterval(autoSlideInterval);
     });
-    document.getElementById('sliderContainer').addEventListener('mouseleave', () => {
+    document.getElementById('sliderContainer')?.addEventListener('mouseleave', () => {
       startAutoSlide();
     });
-
   </script>
 </body>
 </html>

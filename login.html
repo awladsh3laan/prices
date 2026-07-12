@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تسجيل الدخول - أولاد شعلان</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -25,32 +23,12 @@
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
-    .logo {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .logo h1 {
-      color: #1a2a6c;
-      font-size: 28px;
-    }
-    .logo p {
-      color: #666;
-      font-size: 14px;
-    }
-    .logo i {
-      font-size: 50px;
-      color: #1a2a6c;
-      margin-bottom: 10px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: bold;
-    }
+    .logo { text-align: center; margin-bottom: 30px; }
+    .logo h1 { color: #1a2a6c; font-size: 28px; }
+    .logo p { color: #666; font-size: 14px; }
+    .logo i { font-size: 50px; color: #1a2a6c; margin-bottom: 10px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: bold; }
     .form-group input {
       width: 100%;
       padding: 14px 18px;
@@ -81,11 +59,7 @@
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(26,42,108,0.3);
     }
-    .login-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .error-msg {
       color: #e74c3c;
       background: #fde8e8;
@@ -96,11 +70,7 @@
       text-align: center;
     }
     .error-msg.show { display: block; }
-    .loading-spinner {
-      display: none;
-      text-align: center;
-      margin: 10px 0;
-    }
+    .loading-spinner { display: none; text-align: center; margin: 10px 0; }
     .loading-spinner.show { display: block; }
     .spinner {
       width: 30px;
@@ -111,38 +81,28 @@
       animation: spin 0.8s linear infinite;
       margin: auto;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .footer-text {
       text-align: center;
       margin-top: 20px;
       color: #888;
       font-size: 13px;
     }
-    .brand-name {
-      color: #1a2a6c;
-      font-weight: bold;
-    }
-    @media (max-width: 480px) {
-      .login-container { padding: 25px; }
-    }
+    .brand-name { color: #1a2a6c; font-weight: bold; }
+    @media (max-width: 480px) { .login-container { padding: 25px; } }
   </style>
 </head>
 <body>
-
   <div class="login-container">
     <div class="logo">
       <i class="fas fa-store-alt"></i>
       <h1>أولاد شعلان</h1>
       <p>لوحة تحكم المسؤولين</p>
     </div>
-
     <div id="errorMsg" class="error-msg">
       <i class="fas fa-exclamation-circle"></i>
       <span id="errorText">خطأ في تسجيل الدخول</span>
     </div>
-
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
         <label><i class="fas fa-envelope"></i> الإيميل</label>
@@ -156,61 +116,57 @@
         <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
       </button>
     </form>
-
     <div class="loading-spinner" id="loadingSpinner">
       <div class="spinner"></div>
       <p style="margin-top: 10px; color: #666;">جاري التحقق...</p>
     </div>
-
     <div class="footer-text">
       <i class="fas fa-shield-alt"></i> نظام آمن بإدارة <span class="brand-name">FAMO</span>
     </div>
   </div>
 
-  <!-- ===== Firebase Scripts ===== -->
-<script src="famo-sec.js"></script>
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
-        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"
-      }
-    }
-  </script>
-  <script type="module">
-    import { initializeApp } from 'firebase/app';
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
-    import { getDatabase, ref, get } from 'firebase/database';
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    // ===== تهيئة Firebase =====
-    const app = initializeApp(window.firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
+  <!-- ===== Firebase SDK ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    // ===== التحقق من حالة تسجيل الدخول عند تحميل الصفحة =====
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // تحقق من أن المستخدم مسؤول
-        try {
-          const adminRef = ref(database, `admins/${user.uid}`);
-          const snapshot = await get(adminRef);
-          if (snapshot.exists()) {
-            // ✅ مسؤول - التوجيه إلى لوحة التحكم
-            window.location.href = 'admin.html';
-          } else {
-            // ❌ ليس مسؤولاً - تسجيل الخروج
-            await signOut(auth);
-            showError('⚠️ هذا الحساب ليس مسؤولاً');
-          }
-        } catch (e) {
-          console.error('Error checking admin:', e);
-          await signOut(auth);
-        }
-      }
-    });
+  <script>
+    // =============================================
+    // 🔐 بيانات Firebase والكونفيج
+    // =============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKHRq7Bl6JQxXdWajIZBgch3TcHhzvI1g",
+      authDomain: "price-famo-app.firebaseapp.com",
+      databaseURL: "https://price-famo-app-default-rtdb.europe-west1.firebasedatabase.app/",
+      projectId: "price-famo-app",
+      storageBucket: "price-famo-app.firebasestorage.app",
+      messagingSenderId: "1077937125055",
+      appId: "1:1077937125055:web:03c9e3192ad5233e98b80a"
+    };
 
-    // ===== دالة تسجيل الدخول =====
+    // ===== Super Admin Data =====
+    const SUPER_ADMIN = {
+      uid: "5sAELDBWi5VbIukIgVgL7CRBzH32",
+      email: "famo@admin.net",
+      name: "mostafa",
+      imageUrl: "https://i.ibb.co/HLKqRgtK/Picsart-26-06-02-06-55-02-557.png",
+      role: "super_admin"
+    };
+
+    // =============================================
+    // 🚀 تهيئة Firebase
+    // =============================================
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+    console.log("✅ Firebase initialized successfully!");
+
+    // =============================================
+    // 🔑 دوال تسجيل الدخول
+    // =============================================
     window.handleLogin = async function(e) {
       e.preventDefault();
       
@@ -221,56 +177,42 @@
       const errorMsg = document.getElementById('errorMsg');
       const errorText = document.getElementById('errorText');
 
-      // إخفاء الرسائل السابقة
       errorMsg.classList.remove('show');
-      
-      // تعطيل الزر وإظهار التحميل
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...';
       spinner.classList.add('show');
 
       try {
-        // 1. تسجيل الدخول عبر Firebase Auth
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // 2. التحقق من وجود المستخدم في عقدة admins
-        const adminRef = ref(database, `admins/${user.uid}`);
-        const snapshot = await get(adminRef);
+        const adminRef = database.ref(`admins/${user.uid}`);
+        const snapshot = await adminRef.once('value');
         
         if (!snapshot.exists()) {
-          // تسجيل الخروج إذا لم يكن مسؤولاً
-          await signOut(auth);
+          await auth.signOut();
           showError('⚠️ غير مصرح بالدخول. هذا الحساب ليس مسؤولاً.');
           return;
         }
 
-        // 3. التحقق من أن الإيميل متطابق
         const adminData = snapshot.val();
         if (adminData.email !== email) {
-          await signOut(auth);
+          await auth.signOut();
           showError('⚠️ الإيميل غير متطابق مع بيانات المسؤول.');
           return;
         }
 
-        // 4. ✅ نجاح تسجيل الدخول - التوجيه إلى لوحة التحكم
         window.location.href = 'admin.html';
 
       } catch (error) {
         console.error('Login error:', error);
         let msg = 'حدث خطأ أثناء تسجيل الدخول';
-        if (error.code === 'auth/user-not-found') {
-          msg = '⚠️ هذا الإيميل غير مسجل';
-        } else if (error.code === 'auth/wrong-password') {
-          msg = '⚠️ كلمة المرور غير صحيحة';
-        } else if (error.code === 'auth/invalid-email') {
-          msg = '⚠️ صيغة الإيميل غير صحيحة';
-        } else if (error.code === 'auth/too-many-requests') {
-          msg = '⚠️ تم تجاوز عدد المحاولات. حاول لاحقاً';
-        }
+        if (error.code === 'auth/user-not-found') msg = '⚠️ هذا الإيميل غير مسجل';
+        else if (error.code === 'auth/wrong-password') msg = '⚠️ كلمة المرور غير صحيحة';
+        else if (error.code === 'auth/invalid-email') msg = '⚠️ صيغة الإيميل غير صحيحة';
+        else if (error.code === 'auth/too-many-requests') msg = '⚠️ تم تجاوز عدد المحاولات. حاول لاحقاً';
         showError(msg);
       } finally {
-        // إعادة تفعيل الزر
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
         spinner.classList.remove('show');
@@ -284,6 +226,23 @@
       errorMsg.classList.add('show');
     }
 
+    // ===== التحقق من حالة تسجيل الدخول =====
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const adminRef = database.ref(`admins/${user.uid}`);
+          const snapshot = await adminRef.once('value');
+          if (snapshot.exists()) {
+            window.location.href = 'admin.html';
+          } else {
+            await auth.signOut();
+          }
+        } catch (e) {
+          console.error('Error checking admin:', e);
+          await auth.signOut();
+        }
+      }
+    });
   </script>
 </body>
 </html>
